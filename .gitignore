@@ -7,3 +7,4 @@ Homestead.yaml
 .env
 .env.*
 .phpunit.result.cache
+phplint.cache
