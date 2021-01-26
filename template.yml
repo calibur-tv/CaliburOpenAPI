@@ -20,6 +20,8 @@ Resources:
         Timeout: 30
         CodeUri: './'
         InstanceConcurrency: 10
+        EnvironmentVariables:
+          BOOTSTRAP_FILE: bootstrap_app
 
       Events:
         http-function-name:
