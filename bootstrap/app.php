@@ -65,6 +65,8 @@ $app->singleton(
 
 $app->configure('app');
 
+$app->configure('cors');
+
 $app->configure('database');
 
 $app->configure('sentry');
@@ -80,14 +82,18 @@ $app->configure('sentry');
 |
 */
 
-// $app->middleware([
-//     App\Http\Middleware\ExampleMiddleware::class
-// ]);
+ $app->middleware([
+     Fruitcake\Cors\HandleCors::class,
+ ]);
 
-// $app->routeMiddleware([
-//     'auth' => App\Http\Middleware\Authenticate::class,
-// ]);
-
+$app->routeMiddleware([
+    'auth' => App\Http\Middleware\Authenticate::class,
+    'user' => App\Http\Middleware\UserMiddleware::class,
+    'throttle' => App\Http\Middleware\ThrottleMiddleware::class,
+    'geetest' => App\Http\Middleware\GeetestMiddleware::class,
+//    'permission' => Spatie\Permission\Middlewares\PermissionMiddleware::class,
+//    'role' => Spatie\Permission\Middlewares\RoleMiddleware::class,
+]);
 /*
 |--------------------------------------------------------------------------
 | Register Service Providers
@@ -98,9 +104,12 @@ $app->configure('sentry');
 | totally optional, so you are not required to uncomment this line.
 |
 */
-// $app->register(App\Providers\AppServiceProvider::class);
-// $app->register(App\Providers\AuthServiceProvider::class);
-// $app->register(App\Providers\EventServiceProvider::class);
+$app->register(App\Providers\AppServiceProvider::class);
+$app->register(App\Providers\AuthServiceProvider::class);
+$app->register(App\Providers\EventServiceProvider::class);
+$app->register(App\Providers\QueryLogServiceProvider::class);
+
+$app->register(Fruitcake\Cors\CorsServiceProvider::class);
 $app->register(Hhxsv5\LaravelS\Illuminate\LaravelSServiceProvider::class);
 $app->register(Illuminate\Redis\RedisServiceProvider::class);
 $app->register(Sentry\Laravel\ServiceProvider::class);

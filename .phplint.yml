@@ -7,4 +7,5 @@ exclude:
   - vendor
   - tests
   - .fun
+  - storage
 warning: false
