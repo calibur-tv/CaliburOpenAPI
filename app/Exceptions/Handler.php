@@ -57,40 +57,38 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Throwable $e)
     {
-        if ($e instanceof HttpResponseException)
-        {
-            return $e->getResponse();
-        }
-        else if ($e instanceof ModelNotFoundException || $e instanceof NotFoundHttpException)
+        if ($e instanceof ModelNotFoundException || $e instanceof NotFoundHttpException)
         {
             return response([
                 'code' => 404,
                 'message' => '您访问的资源不存在'
-            ], 404);
+            ]);
         }
         else if ($e instanceof AuthorizationException)
         {
             return response([
                 'code' => 401,
                 'message' => '用户认证错误'
-            ], 401);
+            ]);
         }
         else if ($e instanceof MethodNotAllowedHttpException)
         {
             return response([
                 'code' => 405,
                 'message' => '错误的请求方法'
-            ], 405);
+            ]);
         }
-        else if ($e instanceof ValidationException && $e->getResponse())
+        else if ($e instanceof ValidationException || $e instanceof HttpResponseException)
         {
-            return $e->getResponse();
+            return response([
+                'code' => 403,
+                'message' => $e->getMessage()
+            ]);
         }
 
         return response([
             'code' => 503,
             'message' => $e->getMessage()
-        ], 503);
-//        return parent::render($request, $exception);
+        ]);
     }
 }

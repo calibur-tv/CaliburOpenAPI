@@ -5,7 +5,7 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Contracts\Auth\Factory as Auth;
 
-class Authenticate
+class UserMiddleware
 {
     /**
      * The authentication guard factory instance.
@@ -33,16 +33,8 @@ class Authenticate
      * @param  string|null  $guard
      * @return mixed
      */
-    public function handle($request, Closure $next, $guard = null)
+    public function handle($request, Closure $next)
     {
-        if ($this->auth->guard($guard)->guest())
-        {
-            return response([
-                'code' => 401,
-                'message' => '继续操作前请先登录'
-            ]);
-        }
-
         return $next($request);
     }
 }
