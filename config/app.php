@@ -131,14 +131,14 @@ return [
             'access_key_id' => env('ALIYUN_SMS_ID'),
             'access_key_secret' => env('ALIYUN_SMS_SECRET'),
             'sign_name' => '上海十六夜'
-        ]
-    ],
+        ],
 
-    'search' => [
-        'access' => env('ALIYUN_OPEN_SEARCH_ACCESS'),
-        'secret' => env('ALIYUN_OPEN_SEARCH_SECRET'),
-        'name' => env('ALIYUN_OPEN_SEARCH_APP_NAME'),
-        'endpoint' => env('APP_ENV') === 'production' ? env('ALIYUN_OPEN_SEARCH_END_POINT_PROD') : env('ALIYUN_OPEN_SEARCH_END_POINT_TEST')
+        'search' => [
+            'access' => env('ALIYUN_OPEN_SEARCH_ACCESS'),
+            'secret' => env('ALIYUN_OPEN_SEARCH_SECRET'),
+            'name' => env('ALIYUN_OPEN_SEARCH_APP_NAME'),
+            'endpoint' => env('APP_ENV') === 'production' ? env('ALIYUN_OPEN_SEARCH_END_POINT_PROD') : env('ALIYUN_OPEN_SEARCH_END_POINT_TEST')
+        ],
     ],
 
     'oauth2' => [

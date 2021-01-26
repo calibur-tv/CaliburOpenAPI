@@ -109,6 +109,7 @@ $app->register(App\Providers\AuthServiceProvider::class);
 $app->register(App\Providers\EventServiceProvider::class);
 $app->register(App\Providers\QueryLogServiceProvider::class);
 
+$app->register(Mews\Purifier\PurifierServiceProvider::class);
 $app->register(Fruitcake\Cors\CorsServiceProvider::class);
 $app->register(Hhxsv5\LaravelS\Illuminate\LaravelSServiceProvider::class);
 $app->register(Illuminate\Redis\RedisServiceProvider::class);
@@ -126,9 +127,16 @@ $app->register(Sentry\Laravel\ServiceProvider::class);
 */
 
 $app->router->group([
-    'namespace' => 'App\Http\Controllers',
+    'namespace' => 'App\Http\Controllers\web'
 ], function ($router) {
     require __DIR__.'/../routes/web.php';
+});
+
+$app->router->group([
+    'namespace' => 'App\Http\Controllers\v1',
+    'prefix' => 'v1'
+], function ($router) {
+    require __DIR__.'/../routes/v1.php';
 });
 
 return $app;
