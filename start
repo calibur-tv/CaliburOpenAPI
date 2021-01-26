@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+cp .env.local .env
+php bin/laravels start --env=local

@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+cp .env.production .env
+
+sleep 1
+
+fun deploy -y

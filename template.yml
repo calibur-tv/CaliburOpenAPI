@@ -1,0 +1,45 @@
+ROSTemplateFormatVersion: '2015-09-01'
+Transform: 'Aliyun::Serverless-2018-04-03'
+Resources:
+  server-name:
+    Type: 'Aliyun::Serverless::Service'
+    Properties:
+      Role: 'acs:ram::1911607420711126:role/new-service1606871905191-role'
+      VpcConfig:
+        VpcId: vpc-uf6d791e7ysear9mwu6ac
+        VSwitchIds:
+          - vsw-uf6cc40fjn4ljk3whlzdo
+        SecurityGroupId: sg-uf6i1r3ycwoin71f7dr7
+
+    function-name:
+      Type: 'Aliyun::Serverless::Function'
+      Properties:
+        Handler: server.handler
+        Runtime: custom
+        MemorySize: 512
+        Timeout: 30
+        CodeUri: './'
+        InstanceConcurrency: 10
+
+      Events:
+        http-function-name:
+          Type: HTTP
+          Properties:
+            AuthType: ANONYMOUS
+            Methods:
+              - GET
+              - PUT
+              - POST
+              - DELETE
+              - HEAD
+
+  php_auto_domain:
+    Type: 'Aliyun::Serverless::CustomDomain'
+    Properties:
+      DomainName: Auto
+      Protocol: HTTP
+      RouteConfig:
+        routes:
+          /*:
+            serviceName: server-name
+            functionName: function-name
