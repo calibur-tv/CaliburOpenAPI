@@ -89,8 +89,7 @@ class Handler extends ExceptionHandler
 
         return response([
             'code' => 503,
-            'message' => $e->getMessage(),
-            'config' => env('REDIS_HOST')
+            'message' => $e->getMessage()
         ], 503);
 //        return parent::render($request, $exception);
     }

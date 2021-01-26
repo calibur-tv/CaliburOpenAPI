@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 
 cp .env.local .env
-php bin/laravels start --env=local
+php -S localhost:9000 -t public
