@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\v1;
 
 use App\Http\Controllers\Controller;
-use App\Http\Modules\Spider\Auth\UserIsBilibili;
 use App\Http\Repositories\UserRepository;
 use App\Http\Transformers\User\UserAuthResource;
 use App\Services\Qiniu\Qshell;
@@ -17,6 +16,7 @@ use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use App\Modules\Http\Client;
+use App\Modules\Spider\Auth\UserIsBilibili;
 
 class SignController extends Controller
 {
