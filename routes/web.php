@@ -24,5 +24,13 @@ $router->get('/', function () use ($router)
     }
     Redis::SET('count', $count + 1);
 
-    return $router->app->version() . '；visit count：' . $count . '；swoole：' . swoole_version();
+    $user = \App\Models\User::find(1);
+
+    return response([
+        'app_version' => $router->app->version(),
+        'swoole_version' => swoole_version(),
+        'php_version' => phpversion(),
+        'counter' => $count,
+        'user' => $user
+    ]);
 });
