@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\Qiniu\Http;
+namespace App\Modules\Http;
 
 final class Client
 {

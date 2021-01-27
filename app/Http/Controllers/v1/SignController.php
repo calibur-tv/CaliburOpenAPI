@@ -16,7 +16,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
-use App\Services\Qiniu\Http\Client;
+use App\Modules\Http\Client;
 
 class SignController extends Controller
 {

@@ -84,6 +84,7 @@ $app->configure('sentry');
 
  $app->middleware([
      Fruitcake\Cors\HandleCors::class,
+     App\Http\Middleware\ResponseMiddleware::class,
  ]);
 
 $app->routeMiddleware([

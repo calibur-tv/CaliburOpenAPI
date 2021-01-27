@@ -13,7 +13,7 @@ return [
     |
     */
 
-    'name' => env('APP_NAME', 'lumen'),
+    'name' => 'luna',
 
     /*
     |--------------------------------------------------------------------------
@@ -171,6 +171,7 @@ return [
                 'client_secret' => env('WECHAT_APP_SEARCH_BAD_HISTORY_SECRET'),
             ]
         ],
+        // QQ小程序
         'qq_mini_app' => [
             'moe_idol' => [
                 'client_id' => env('QQ_APP_MOE_IDOL_OPEN_ID'),
