@@ -2,8 +2,6 @@
 
 /** @var \Laravel\Lumen\Routing\Router $router */
 
-use Illuminate\Support\Facades\Redis;
-
 /*
 |--------------------------------------------------------------------------
 | Application Routes
@@ -17,20 +15,5 @@ use Illuminate\Support\Facades\Redis;
 
 $router->get('/', function () use ($router)
 {
-    $count = Redis::GET('count');
-    if (!$count)
-    {
-        $count = 1;
-    }
-    Redis::SET('count', $count + 1);
-
-    $user = \App\Models\User::find(1);
-
-    return response([
-        'app_version' => $router->app->version(),
-        'swoole_version' => swoole_version(),
-        'php_version' => phpversion(),
-        'counter' => $count,
-        'user' => $user
-    ]);
+    return 'hello guys~';
 });
