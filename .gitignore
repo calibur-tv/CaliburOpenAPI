@@ -1,6 +1,7 @@
 /vendor
 /.idea
 /.fun
+/certificates
 /storage
 Homestead.json
 Homestead.yaml

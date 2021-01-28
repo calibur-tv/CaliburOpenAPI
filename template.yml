@@ -1,7 +1,7 @@
 ROSTemplateFormatVersion: '2015-09-01'
 Transform: 'Aliyun::Serverless-2018-04-03'
 Resources:
-  server-name:
+  calibur-api:
     Type: 'Aliyun::Serverless::Service'
     Properties:
       Role: 'acs:ram::1911607420711126:role/new-service1606871905191-role'
@@ -11,7 +11,7 @@ Resources:
           - vsw-uf6cc40fjn4ljk3whlzdo
         SecurityGroupId: sg-uf6i1r3ycwoin71f7dr7
 
-    function-name:
+    lumen-server:
       Type: 'Aliyun::Serverless::Function'
       Properties:
         Handler: server.handler
@@ -24,7 +24,7 @@ Resources:
           BOOTSTRAP_FILE: bootstrap_app
 
       Events:
-        http-function-name:
+        http-lumen-server:
           Type: HTTP
           Properties:
             AuthType: ANONYMOUS
@@ -35,13 +35,16 @@ Resources:
               - DELETE
               - HEAD
 
-  php_auto_domain:
+  fc.calibur.tv:
     Type: 'Aliyun::Serverless::CustomDomain'
     Properties:
-      DomainName: Auto
-      Protocol: HTTP
+      Protocol: HTTP,HTTPS
+      CertConfig:
+        CertName: 'cert-4811598'
+        PrivateKey: './certificates/private.pem'
+        Certificate: './certificates/certificate.pem'
       RouteConfig:
         routes:
           /*:
-            serviceName: server-name
-            functionName: function-name
+            serviceName: calibur-api
+            functionName: lumen-server
