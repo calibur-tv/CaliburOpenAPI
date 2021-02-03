@@ -204,19 +204,20 @@ class SignController extends Controller
             return $this->resOK($user->api_token);
         }
 
+        $secret = $request->get('secret');
+
         $data = [
-            'password' => $authCode,
+            'password' => $secret ?? $authCode,
             'phone' => $access
         ];
 
         $inviteCode = $request->get('inviteCode');
         if ($inviteCode)
         {
-            $userRepository = new UserRepository();
-            $invitor = $userRepository->item($inviteCode);
-            if ($invitor)
+            $hasInvitor = User::where('id', $inviteCode)->count() !== 0;
+            if ($hasInvitor)
             {
-                $data['invitor_slug'] = $inviteCode;
+                $data['invitor_id'] = $inviteCode;
             }
         }
 

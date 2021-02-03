@@ -7,13 +7,13 @@ use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Crypt;
-use Illuminate\Support\Facades\Hash;
 use Laravel\Lumen\Auth\Authorizable;
 
 class User extends Model implements AuthenticatableContract, AuthorizableContract
 {
-    use Authenticatable, Authorizable, HasFactory;
+    use Authenticatable, Authorizable, HasFactory, SoftDeletes;
 
     protected $guard_name = 'api';
 
@@ -26,7 +26,12 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
         'phone',
         'nickname',
         'invitor_id',
+        'password',
         'api_token',
+        'wechat_open_id',
+        'wechat_unique_id',
+        'qq_open_id',
+        'qq_unique_id'
     ];
 
     /**
@@ -47,7 +52,12 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
      */
     public function verifyPassword(string $password): bool
     {
-        return Hash::check($password, $this->password);
+        return Crypt::decrypt($this->password) === $password;
+    }
+
+    public function setPasswordAttribute($str)
+    {
+        $this->attributes['password'] = Crypt::encrypt($str);
     }
 
     public function createApiToken()
