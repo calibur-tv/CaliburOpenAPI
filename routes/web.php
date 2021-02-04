@@ -17,3 +17,24 @@ $router->get('/', function () use ($router)
 {
     return 'hello guys~';
 });
+
+$router->group(['prefix' => '/callback'], function () use ($router)
+{
+    $router->group(['prefix' => '/auth'], function () use ($router)
+    {
+        $router->get('/qq', 'AuthController@qqAuthRedirect');
+
+        $router->get('/wechat', 'AuthController@wechatAuthRedirect');
+
+        $router->get('/weixin', 'AuthController@weixinAuthRedirect');
+    });
+
+    $router->group(['prefix' => '/oauth2'], function () use ($router)
+    {
+        $router->get('/qq', 'AuthController@qqAuthEntry');
+
+        $router->get('/wechat', 'AuthController@wechatAuthEntry');
+
+        $router->get('/weixin', 'AuthController@weixinAuthEntry');
+    });
+});

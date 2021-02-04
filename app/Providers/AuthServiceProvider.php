@@ -59,7 +59,7 @@ class AuthServiceProvider extends ServiceProvider
     {
         $token = $request->headers->get($header);
 
-        if (!starts_with(strtolower($token), $prefix))
+        if (!str_starts_with(strtolower($token), $prefix))
         {
             return '';
         }

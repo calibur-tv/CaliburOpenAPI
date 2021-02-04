@@ -5,7 +5,6 @@ namespace App\Http\Controllers\v1;
 use App\Http\Controllers\Controller;
 use App\Http\Repositories\UserRepository;
 use App\Http\Transformers\User\UserAuthResource;
-use App\Services\Qiniu\Qshell;
 use App\Services\Sms\Message;
 use App\Modules\WXBizDataCrypt;
 use App\Services\Socialite\AccessToken;
@@ -15,7 +14,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
-use App\Modules\Http\Client;
+use GuzzleHttp\Client;
 use App\Modules\Spider\Auth\UserIsBilibili;
 
 class SignController extends Controller
@@ -402,15 +401,11 @@ class SignController extends Controller
 
         if ($isNewUser)
         {
-            $qshell = new Qshell();
-            $avatar = $qshell->fetch($user['avatar']);
             // signUp
             $data = [
-                'avatar' => $avatar,
                 'nickname' => $user['nickname'],
                 'qq_open_id' => $openId,
                 'qq_unique_id' => $uniqueId,
-                'sex' => $user['gender'] === '男' ? 1 : ($user['gender'] === '女' ? 2 : 0),
                 'password' => str_rand()
             ];
 
@@ -512,13 +507,9 @@ class SignController extends Controller
 
         if ($isNewUser)
         {
-            $qshell = new Qshell();
-            $avatar = $qshell->fetch($user['avatar']);
             // signUp
             $data = [
-                'avatar' => $avatar,
                 'nickname' => $user['nickname'],
-                'sex' => $user['sex'] ?: 0,
                 'wechat_open_id' => $openId,
                 'wechat_unique_id' => $uniqueId,
                 'password' => str_rand()
@@ -625,7 +616,7 @@ class SignController extends Controller
                 'Accept' => 'application/json'
             ]
         );
-        $body = json_decode($resp->body, true);
+        $body = $resp->getBody();
 
         if (!isset($body['session_key']))
         {
@@ -655,7 +646,7 @@ class SignController extends Controller
             'wechat_unique_id' => $uniqueId
         ]);
 
-        return $this->resNoContent();
+        return $this->resOK();
     }
 
     public function bindQQUser(Request $request)
@@ -679,7 +670,7 @@ class SignController extends Controller
                 'Accept' => 'application/json'
             ]
         );
-        $body = json_decode($resp->body, true);
+        $body = $resp->getBody();
 
         if (!isset($body['session_key']))
         {
@@ -709,7 +700,7 @@ class SignController extends Controller
             'qq_unique_id' => $uniqueId,
         ]);
 
-        return $this->resNoContent();
+        return $this->resOK();
     }
 
     public function getWechatPhone(Request $request)
@@ -733,7 +724,7 @@ class SignController extends Controller
                 'Accept' => 'application/json'
             ]
         );
-        $body = json_decode($resp->body, true);
+        $body = $resp->getBody();
 
         if (!isset($body['session_key']))
         {
@@ -770,7 +761,7 @@ class SignController extends Controller
                 'phone' => $phone
             ]);
 
-            return $this->resNoContent();
+            return $this->resOK();
         }
 
         $messageCode = $this->createMessageAuthCode($phone, $type);
@@ -810,13 +801,9 @@ class SignController extends Controller
         $isNewUser = $this->accessIsNew('wechat_unique_id', $uniqueId);
         if ($isNewUser)
         {
-            $qshell = new Qshell();
-            $avatar = $qshell->fetch($user['avatarUrl']);
             // signUp
             $data = [
-                'avatar' => $avatar,
                 'nickname' => $user['nickName'],
-                'sex' => $user['gender'] ?: 0,
                 'wechat_open_id' => $data['openId'],
                 'wechat_unique_id' => $uniqueId,
                 'password' => str_rand()
@@ -858,7 +845,7 @@ class SignController extends Controller
                 'Accept' => 'application/json'
             ]
         );
-        $body = json_decode($resp->body, true);
+        $body = $resp->getBody();
         $uniqueId = $body['unionid'] ?? '';
         if (!isset($body['session_key']))
         {
@@ -921,13 +908,9 @@ class SignController extends Controller
         $isNewUser = $this->accessIsNew('qq_unique_id', $uniqueId);
         if ($isNewUser)
         {
-            $qshell = new Qshell();
-            $avatar = $qshell->fetch($user['avatarUrl']);
             // signUp
             $data = [
-                'avatar' => $avatar,
                 'nickname' => $user['nickName'],
-                'sex' => $user['gender'] ?: 0,
                 'qq_open_id' => $data['openId'],
                 'qq_unique_id' => $uniqueId,
                 'password' => str_rand()
@@ -969,7 +952,7 @@ class SignController extends Controller
                 'Accept' => 'application/json'
             ]
         );
-        $body = json_decode($resp->body, true);
+        $body = $resp->getBody();
         $uniqueId = $body['unionid'] ?? '';
         if (!isset($body['session_key']))
         {

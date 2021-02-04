@@ -7,6 +7,7 @@
     "require": {
         "php": "^7.3|^8.0",
         "fruitcake/laravel-cors": "^2.0",
+        "guzzlehttp/guzzle": "^7.2",
         "hhxsv5/laravel-s": "~3.7.0",
         "illuminate/redis": "^8.24",
         "jaeger/querylist": "^4.2",

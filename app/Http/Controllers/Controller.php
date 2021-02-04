@@ -22,11 +22,6 @@ class Controller extends BaseController
         ]);
     }
 
-    protected function resNoContent()
-    {
-        return response('', 204);
-    }
-
     protected function resErrNotFound($message = null)
     {
         return response([
