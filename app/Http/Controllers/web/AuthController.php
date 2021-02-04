@@ -28,7 +28,7 @@ class AuthController extends Controller
 
         return $socialite
             ->driver('qq')
-            ->redirect('https://api.calibur.tv/callback/auth/qq?' . http_build_query($request->all()));
+            ->redirect('https://fc.calibur.tv/callback/auth/qq?' . http_build_query($request->all()));
     }
 
     // 微信开放平台登录 - PC
@@ -38,7 +38,7 @@ class AuthController extends Controller
 
         return $socialite
             ->driver('wechat')
-            ->redirect('https://api.calibur.tv/callback/auth/wechat?' . http_build_query($request->all()));
+            ->redirect('https://fc.calibur.tv/callback/auth/wechat?' . http_build_query($request->all()));
     }
 
     /**
@@ -54,7 +54,7 @@ class AuthController extends Controller
 
         return $socialite
             ->driver('weixin')
-            ->redirect('https://api.calibur.tv/callback/auth/weixin?' . http_build_query($request->all()));
+            ->redirect('https://fc.calibur.tv/callback/auth/weixin?' . http_build_query($request->all()));
     }
 
     public function qqAuthRedirect(Request $request)
