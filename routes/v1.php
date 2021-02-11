@@ -52,3 +52,8 @@ $router->group(['prefix' => 'sign'], function () use ($router)
         $router->post('/wechat', 'SignController@wechatAuthRedirect');
     });
 });
+
+$router->group(['prefix' => '/upload'], function () use ($router)
+{
+    $router->get('/token', 'UploadController@token');
+});

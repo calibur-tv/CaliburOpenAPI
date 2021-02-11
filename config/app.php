@@ -133,6 +133,11 @@ return [
             'sign_name' => '上海十六夜'
         ],
 
+        'oss' => [
+            'id' => env('ALIYUN_OSS_ID'),
+            'secret' => env('ALIYUN_OSS_SECRET')
+        ],
+
         'search' => [
             'access' => env('ALIYUN_OPEN_SEARCH_ACCESS'),
             'secret' => env('ALIYUN_OPEN_SEARCH_SECRET'),

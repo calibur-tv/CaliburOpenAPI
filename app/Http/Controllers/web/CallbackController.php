@@ -13,7 +13,7 @@ use App\Services\Socialite\SocialiteManager;
 use App\Models\User;
 use Illuminate\Http\Request;
 
-class AuthController extends Controller
+class CallbackController extends Controller
 {
     /**
      * QQ第三方登录调用授权
@@ -288,6 +288,11 @@ class AuthController extends Controller
         }
 
         return redirect('https://www.calibur.tv/callback/auth-redirect?message=登录成功&token=' . $user->api_token . '&redirect=' . $request->get('redirect'));
+    }
+
+    public function aliyunOSSupload(Request $request)
+    {
+
     }
 
     private function accessIsNew($method, $access)

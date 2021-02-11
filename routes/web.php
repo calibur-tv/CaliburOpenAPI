@@ -22,19 +22,24 @@ $router->group(['prefix' => '/callback'], function () use ($router)
 {
     $router->group(['prefix' => '/auth'], function () use ($router)
     {
-        $router->get('/qq', 'AuthController@qqAuthRedirect');
+        $router->get('/qq', 'CallbackController@qqAuthRedirect');
 
-        $router->get('/wechat', 'AuthController@wechatAuthRedirect');
+        $router->get('/wechat', 'CallbackController@wechatAuthRedirect');
 
-        $router->get('/weixin', 'AuthController@weixinAuthRedirect');
+        $router->get('/weixin', 'CallbackController@weixinAuthRedirect');
     });
 
     $router->group(['prefix' => '/oauth2'], function () use ($router)
     {
-        $router->get('/qq', 'AuthController@qqAuthEntry');
+        $router->get('/qq', 'CallbackController@qqAuthEntry');
 
-        $router->get('/wechat', 'AuthController@wechatAuthEntry');
+        $router->get('/wechat', 'CallbackController@wechatAuthEntry');
 
-        $router->get('/weixin', 'AuthController@weixinAuthEntry');
+        $router->get('/weixin', 'CallbackController@weixinAuthEntry');
+    });
+
+    $router->group(['prefix' => '/oss'], function () use ($router)
+    {
+        $router->get('/upload', 'CallbackController@aliyunOSSupload');
     });
 });
