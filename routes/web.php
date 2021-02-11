@@ -40,6 +40,6 @@ $router->group(['prefix' => '/callback'], function () use ($router)
 
     $router->group(['prefix' => '/oss'], function () use ($router)
     {
-        $router->get('/upload', 'CallbackController@aliyunOSSupload');
+        $router->post('/upload', 'CallbackController@aliyunOSSupload');
     });
 });

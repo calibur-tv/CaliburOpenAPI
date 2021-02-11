@@ -292,7 +292,7 @@ class CallbackController extends Controller
 
     public function aliyunOSSupload(Request $request)
     {
-
+        return $this->resOK($request->all());
     }
 
     private function accessIsNew($method, $access)
