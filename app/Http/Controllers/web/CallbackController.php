@@ -11,6 +11,7 @@ namespace App\Http\Controllers\web;
 use App\Http\Controllers\Controller;
 use App\Services\Socialite\SocialiteManager;
 use App\Models\User;
+use GuzzleHttp\Client;
 use Illuminate\Http\Request;
 
 class CallbackController extends Controller
@@ -292,7 +293,48 @@ class CallbackController extends Controller
 
     public function aliyunOSSupload(Request $request)
     {
-        return $this->resOK($request->all());
+        // 1.获取OSS的签名header和公钥url
+        $authorizationBase64 = $request->headers->get('authorization');
+        $pubKeyUrlBase64 = $request->headers->get('x-oss-pub-key-url');
+        if (!$authorizationBase64 || !$pubKeyUrlBase64)
+        {
+            return $this->resErrBad();
+        }
+        // 2.获取OSS的签名
+        $authorization = base64_decode($authorizationBase64);
+        // 3.获取公钥
+        $pubKeyUrl = base64_decode($pubKeyUrlBase64);
+        $client = new Client();
+        $resp = $client->get($pubKeyUrl);
+        $pubKey = $resp->getBody();
+        if ($pubKey == "")
+        {
+            return $this->resErrServiceUnavailable();
+        }
+        // 4.获取回调body
+        $body = $request->getContent();
+        $path = '/' . $request->path();
+        $fullUrl = $request->fullUrl();
+        $pos = strpos($fullUrl, '?');
+        // 5.拼接待签名字符串
+        if ($pos === false)
+        {
+            $authStr = urldecode($path) . "\n" . $body;
+        }
+        else
+        {
+            $authStr = urldecode($path) . substr($fullUrl, $pos, strlen($fullUrl) - $pos) . "\n" . $body;
+        }
+        // 6.验证签名
+        $ok = openssl_verify($authStr, $authorization, $pubKey, OPENSSL_ALGO_MD5);
+        if ($ok != 1)
+        {
+            return $this->resErrRole();
+        }
+
+        return $this->resOK([
+            'data' => $request->all()
+        ]);
     }
 
     private function accessIsNew($method, $access)
