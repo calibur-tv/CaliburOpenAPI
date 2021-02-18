@@ -11,23 +11,24 @@ class UploadController extends Controller
 {
     public function token(Request $request)
     {
+        $user = $request->user();
         $id = config('app.aliyun.oss.id');          // 请填写您的AccessKeyId。
         $key = config('app.aliyun.oss.secret');     // 请填写您的AccessKeySecret。
         // $host的格式为 bucketname.endpoint，请替换为您的真实信息。
         $host = 'https://calibur-arthur.oss-cn-shanghai.aliyuncs.com';
         // $callbackUrl为上传回调服务器的URL，请将下面的IP和Port配置为您自己的真实URL信息。
         $callbackUrl = 'https://fc.calibur.tv/callback/oss/upload';
-        $dir = 'user-dir-prefix/';          // 用户上传文件时指定的前缀。
+        $dir = 'user-' . $user->id . '/';          // 用户上传文件时指定的前缀。
         $callback_param = array(
             'callbackUrl' => $callbackUrl,
-            'callbackBody' => 'filename=${object}&size=${size}&mimeType=${mimeType}&height=${imageInfo.height}&width=${imageInfo.width}',
+            'callbackBody' => 'filename=${object}&size=${size}&mimeType=${mimeType}&height=${imageInfo.height}&width=${imageInfo.width}&format=${imageInfo.format}',
             'callbackBodyType' => "application/x-www-form-urlencoded"
         );
         $callback_string = json_encode($callback_param);
 
         $base64_callback_body = base64_encode($callback_string);
         $now = time();
-        $expire = 300000;  //设置该policy超时时间是10s. 即这个policy过了这个有效时间，将不能访问。
+        $expire = 86400;  //设置该policy超时时间是1天. 即这个policy过了这个有效时间，将不能访问。
         $end = $now + $expire;
         $expiration = $this->gmt_iso8601($end);
 

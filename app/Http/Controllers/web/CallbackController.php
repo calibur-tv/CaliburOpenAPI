@@ -332,8 +332,13 @@ class CallbackController extends Controller
             return $this->resErrRole();
         }
 
+        $fileDir = $request->get('filename');
+        $userId = str_replace('user-', '', explode($fileDir, '/')[0]);
+        $meta = $request->except(['filename']);
+
         return $this->resOK([
-            'data' => $request->all()
+            'data' => $request->all(),
+            'uid' => $userId
         ]);
     }
 

@@ -55,5 +55,8 @@ $router->group(['prefix' => 'sign'], function () use ($router)
 
 $router->group(['prefix' => '/upload'], function () use ($router)
 {
-    $router->get('/token', 'UploadController@token');
+    $router->group(['middleware' => 'auth'], function () use ($router)
+    {
+        $router->get('/token', 'UploadController@token');
+    });
 });
