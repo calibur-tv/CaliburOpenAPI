@@ -8,8 +8,6 @@ mkdir -p /tmp/storage/framework/views
 mkdir -p /tmp/storage/framework/sessions
 mkdir -p /tmp/storage/logs
 
-chmod -R 777 /tmp/storage
-
 export APP_STORAGE_PATH=/tmp/storage
 
 php bin/laravels start --env=production
