@@ -21,7 +21,7 @@ class DeskController extends Controller
         $dir = 'user-' . $user->id . '/';          // 用户上传文件时指定的前缀。
         $callback_param = array(
             'callbackUrl' => $callbackUrl,
-            'callbackBody' => 'filename=${object}&size=${size}&mimeType=${mimeType}&height=${imageInfo.height}&width=${imageInfo.width}&format=${imageInfo.format}',
+            'callbackBody' => 'filename=${object}&hash=${etag}&size=${size}&mimeType=${mimeType}&height=${imageInfo.height}&width=${imageInfo.width}&format=${imageInfo.format}',
             'callbackBodyType' => "application/x-www-form-urlencoded"
         );
         $callback_string = json_encode($callback_param);

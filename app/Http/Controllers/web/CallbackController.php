@@ -336,7 +336,7 @@ class CallbackController extends Controller
         $fileDir = $request->get('filename');
         $userId = str_replace('user-', '', explode($fileDir, '/')[0]);
         $meta = $request->except(['filename']);
-        $hash = $userId . '-' . time() . '-' . str_rand();
+        $hash =$request->get('hash');
         $user = User::where('id', $userId)->first();
         if (is_null($user))
         {
