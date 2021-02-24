@@ -9,6 +9,7 @@
 namespace App\Http\Controllers\web;
 
 use App\Http\Controllers\Controller;
+use App\Models\Desk;
 use App\Services\Socialite\SocialiteManager;
 use App\Models\User;
 use GuzzleHttp\Client;
@@ -335,11 +336,35 @@ class CallbackController extends Controller
         $fileDir = $request->get('filename');
         $userId = str_replace('user-', '', explode($fileDir, '/')[0]);
         $meta = $request->except(['filename']);
+        $hash = $userId . '-' . time() . '-' . str_rand();
+        $user = User::where('id', $userId)->first();
+        if (is_null($user))
+        {
+            return $this->resErrBad();
+        }
 
-        return $this->resOK([
-            'data' => $request->all(),
-            'uid' => $userId
+        if (User::spaceIsExceed($user))
+        {
+            return $this->resErrRole();
+        }
+
+        $hasFile = Desk::where('hash', $hash)->count();
+        if ($hasFile)
+        {
+            return $this->resOK($request->all());
+        }
+
+        Desk::create([
+            'mime' => $meta['mimeType'],
+            'size' => $meta['size'],
+            'link' => $fileDir,
+            'hash' => $hash,
+            'meta' => $meta
         ]);
+
+        User::spaceUsageAdd($user, $meta['size']);
+
+        return $this->resOK($request->all());
     }
 
     private function accessIsNew($method, $access)

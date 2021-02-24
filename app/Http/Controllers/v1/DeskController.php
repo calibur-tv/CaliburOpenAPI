@@ -7,7 +7,7 @@ namespace App\Http\Controllers\v1;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-class UploadController extends Controller
+class DeskController extends Controller
 {
     public function token(Request $request)
     {

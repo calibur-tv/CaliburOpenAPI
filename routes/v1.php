@@ -53,10 +53,10 @@ $router->group(['prefix' => 'sign'], function () use ($router)
     });
 });
 
-$router->group(['prefix' => '/upload'], function () use ($router)
+$router->group(['prefix' => '/desk'], function () use ($router)
 {
     $router->group(['middleware' => 'auth'], function () use ($router)
     {
-        $router->get('/token', 'UploadController@token');
+        $router->get('/upload_token', 'DeskController@token');
     });
 });

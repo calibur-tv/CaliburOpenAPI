@@ -88,4 +88,14 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
 
         return $user;
     }
+
+    public static function spaceIsExceed($user)
+    {
+        return true;
+    }
+
+    public static function spaceUsageAdd($user, $size)
+    {
+
+    }
 }
