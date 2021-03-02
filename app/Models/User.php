@@ -31,7 +31,9 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
         'wechat_open_id',
         'wechat_unique_id',
         'qq_open_id',
-        'qq_unique_id'
+        'qq_unique_id',
+        'desk_max_space',
+        'desk_use_space'
     ];
 
     /**
@@ -89,13 +91,13 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
         return $user;
     }
 
-    public static function spaceIsExceed($user)
+    public static function spaceIsExceed($user, $size)
     {
-        return true;
+        return $user->desk_max_space - $user->desk_use_space < ceil($size);
     }
 
     public static function spaceUsageAdd($user, $size)
     {
-
+        $user->increment('desk_use_space', ceil($size));
     }
 }

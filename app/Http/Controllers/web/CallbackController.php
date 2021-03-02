@@ -343,24 +343,22 @@ class CallbackController extends Controller
             return $this->resErrBad();
         }
 
-        if (User::spaceIsExceed($user))
+        if (User::spaceIsExceed($user, $meta['size']))
         {
             return $this->resErrRole();
         }
 
-        $hasFile = Desk::where('hash', $hash)->count();
-        if ($hasFile)
+        $hasFile = Desk::where('hash', $hash)->first();
+        if (!$hasFile)
         {
-            return $this->resOK($request->all());
+            Desk::create([
+                'mime' => $meta['mimeType'],
+                'size' => $meta['size'],
+                'link' => $fileDir,
+                'hash' => $hash,
+                'meta' => $meta
+            ]);
         }
-
-        Desk::create([
-            'mime' => $meta['mimeType'],
-            'size' => $meta['size'],
-            'link' => $fileDir,
-            'hash' => $hash,
-            'meta' => $meta
-        ]);
 
         User::spaceUsageAdd($user, $meta['size']);
 
