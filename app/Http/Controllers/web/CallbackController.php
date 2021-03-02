@@ -348,21 +348,26 @@ class CallbackController extends Controller
             return $this->resErrRole();
         }
 
-        $hasFile = Desk::where('hash', $hash)->first();
-        if (!$hasFile)
+        $desk = Desk
+            ::where('hash', $hash)
+            ->where('user_id', $userId)
+            ->first();
+        if (!$desk)
         {
-            Desk::create([
+            $desk = Desk::create([
                 'mime' => $meta['mimeType'],
                 'size' => $meta['size'],
                 'link' => $fileDir,
                 'hash' => $hash,
-                'meta' => $meta
+                'meta' => $meta,
+                'user_id' => $userId,
+                'folder_id' => $request->get('folder_id') ?? 0
             ]);
         }
 
         User::spaceUsageAdd($user, $meta['size']);
 
-        return $this->resOK($request->all());
+        return $this->resOK($desk);
     }
 
     private function accessIsNew($method, $access)

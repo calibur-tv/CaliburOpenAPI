@@ -16,6 +16,8 @@ class Desk extends Model
         'size',
         'link',
         'hash',
-        'meta'
+        'meta',
+        'user_id',
+        'folder_id'
     ];
 }
