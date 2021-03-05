@@ -93,11 +93,11 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
 
     public static function spaceIsExceed($user, $size)
     {
-        return $user->desk_max_space - $user->desk_use_space < ceil($size);
+        return $user->desk_max_space - $user->desk_use_space < ceil($size / 1024);
     }
 
     public static function spaceUsageAdd($user, $size)
     {
-        $user->increment('desk_use_space', ceil($size));
+        $user->increment('desk_use_space', ceil($size / 1024));
     }
 }
