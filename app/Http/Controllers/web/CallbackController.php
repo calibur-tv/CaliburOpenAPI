@@ -333,9 +333,8 @@ class CallbackController extends Controller
             return $this->resErrRole();
         }
 
-        $fileDir = $request->get('filename');
-        $userId = str_replace('user-', '', explode($fileDir, '/')[0]);
-        $meta = $request->except(['filename']);
+        $userId = str_replace('user-', '', explode($request->get('filename'), '/')[0]);
+        $meta = $request->all();
         $hash =$request->get('hash');
         $user = User::where('id', $userId)->first();
         if (is_null($user))
@@ -355,9 +354,6 @@ class CallbackController extends Controller
         if (!$desk)
         {
             $desk = Desk::create([
-                'mime' => $meta['mimeType'],
-                'size' => $meta['size'],
-                'link' => $fileDir,
                 'hash' => $hash,
                 'meta' => $meta,
                 'user_id' => $userId,

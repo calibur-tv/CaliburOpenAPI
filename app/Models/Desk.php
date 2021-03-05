@@ -12,9 +12,7 @@ class Desk extends Model
     use SoftDeletes;
 
     protected $fillable = [
-        'mine',
-        'size',
-        'link',
+        'name',
         'hash',
         'meta',
         'user_id',

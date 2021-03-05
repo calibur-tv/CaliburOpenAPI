@@ -53,10 +53,25 @@ $router->group(['prefix' => 'sign'], function () use ($router)
     });
 });
 
-$router->group(['prefix' => '/desk'], function () use ($router)
+$router->group(['prefix' => '/desk', 'middleware' => 'auth'], function () use ($router)
 {
-    $router->group(['middleware' => 'auth'], function () use ($router)
+    $router->get('/upload_token', 'DeskController@token');
+
+    $router->group(['prefix' => '/folder'], function () use ($router)
     {
-        $router->get('/upload_token', 'DeskController@token');
+        $router->get('/list', 'DeskController@folders');
+
+        $router->post('/create', 'DeskController@createFolder');
+
+        $router->post('/delete', 'DeskController@deleteFolder');
+    });
+
+    $router->group(['prefix' => '/file'], function () use ($router)
+    {
+        $router->get('/list', 'DeskController@files');
+
+        $router->post('/move', 'DeskController@moveFile');
+
+        $router->post('/delete', 'DeskController@deleteFile');
     });
 });

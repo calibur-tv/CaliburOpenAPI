@@ -5,6 +5,8 @@ namespace App\Http\Controllers\v1;
 
 
 use App\Http\Controllers\Controller;
+use App\Models\Desk;
+use App\Models\Folder;
 use Illuminate\Http\Request;
 
 class DeskController extends Controller
@@ -69,6 +71,116 @@ class DeskController extends Controller
         $response['dir'] = $dir;
 
         return $this->resOK($response);
+    }
+
+    public function folders(Request $request)
+    {
+        $user = $request->user();
+        $folders = Folder
+            ::where('user_id', $user->id)
+            ->get()
+            ->toArray();
+
+        return $this->resOK($folders);
+    }
+
+    public function files(Request $request)
+    {
+        $user = $request->user();
+        $folder_id = $request->get('folder_id') ?? 0;
+
+        $files = Desk
+            ::where('user_id', $user->id)
+            ->where('folder_id', $folder_id)
+            ->get()
+            ->toArray();
+
+        return $this->resOK([
+            'total' => count($files),
+            'result' => $files,
+            'no_more' => true
+        ]);
+    }
+
+    public function createFolder(Request $request)
+    {
+        $user = $request->user();
+        $name = $request->get('name');
+
+        $folder = Folder::create([
+            'name' => $name,
+            'user_id' => $user->id
+        ]);
+
+        return $this->resOK($folder);
+    }
+
+    public function deleteFolder(Request $request)
+    {
+        $user = $request->user();
+        $folderId = $request->get('folder_id');
+
+        $folder = Folder
+            ::where('user_id', $user->id)
+            ->where('id', $folderId)
+            ->first();
+
+        if (!$folder)
+        {
+            return $this->resOK();
+        }
+
+        $folder->delete();
+
+        Desk
+            ::where('user_id', $user->id)
+            ->where('folder_id', $folder->id)
+            ->delete();
+
+        return $this->resOK();
+    }
+
+    public function moveFile(Request $request)
+    {
+        $user = $request->user();
+        $fileId = $request->get('file_id');
+        $folderId = $request->get('folder_id');
+        $name = $request->get('name');
+
+        $file = Desk
+            ::where('id', $fileId)
+            ->first();
+
+        if (!$file || $file->user_id !== $user->id)
+        {
+            return $this->resErrBad();
+        }
+
+        $file->update([
+            'name' => $name ?? $file->name,
+            'folder_id' => $folderId ?? $file->folder_id
+        ]);
+
+        return $this->resOK();
+    }
+
+    public function deleteFile(Request $request)
+    {
+        $user = $request->user();
+        $fileId = $request->get('file_id');
+
+        $file = Desk
+            ::where('id', $fileId)
+            ->first();
+
+        if (!$file || $file->user_id !== $user->id)
+        {
+            return $this->resErrBad();
+        }
+
+        $file->delete();
+
+        return $this->resOK();
     }
 
     private function gmt_iso8601($time)
