@@ -333,7 +333,9 @@ class CallbackController extends Controller
             return $this->resErrRole();
         }
 
-        $userId = str_replace('user-', '', explode($request->get('filename'), '/')[0]);
+        $path = $request->get('filename');
+        $prefix = explode('/', $path)[0];
+        $userId = str_replace('user-', '', $prefix);
         $meta = $request->all();
         $hash =$request->get('hash');
         $user = User::where('id', $userId)->first();
@@ -351,14 +353,18 @@ class CallbackController extends Controller
             ::where('hash', $hash)
             ->where('user_id', $userId)
             ->first();
-        if (!$desk)
+
+        if ($desk)
         {
-            $desk = Desk::create([
-                'hash' => $hash,
-                'meta' => $meta,
-                'user_id' => $userId
-            ]);
+            // TODO：更新时间到现在
+            return $this->resOK();
         }
+
+        $desk = Desk::create([
+            'hash' => $hash,
+            'meta' => json_encode($meta),
+            'user_id' => $userId
+        ]);
 
         User::spaceUsageAdd($user, $meta['size']);
 
