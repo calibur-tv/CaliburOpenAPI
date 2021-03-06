@@ -81,6 +81,11 @@ class DeskController extends Controller
             ->get()
             ->toArray();
 
+        array_push($folders, [
+            'name' => '默认文件夹',
+            'id' => 0
+        ]);
+
         return $this->resOK($folders);
     }
 
@@ -113,6 +118,29 @@ class DeskController extends Controller
         ]);
 
         return $this->resOK($folder);
+    }
+
+    public function updateFolder(Request $request)
+    {
+        $user = $request->user();
+        $folderId = $request->get('folder_id');
+        $name = $request->get('name');
+
+        if ($folderId == 0)
+        {
+            return $this->resErrBad('不能修改默认文件夹');
+        }
+
+        $folder = Folder
+            ::where('user_id', $user->id)
+            ->where('id', $folderId)
+            ->first();
+
+        $folder->update([
+            'name' => $name
+        ]);
+
+        return $this->resOK();
     }
 
     public function deleteFolder(Request $request)
@@ -161,7 +189,7 @@ class DeskController extends Controller
             'folder_id' => $folderId ?? $file->folder_id
         ]);
 
-        return $this->resOK();
+        return $this->resOK($file);
     }
 
     public function deleteFile(Request $request)

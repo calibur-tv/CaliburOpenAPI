@@ -63,6 +63,8 @@ $router->group(['prefix' => '/desk', 'middleware' => 'auth'], function () use ($
 
         $router->post('/create', 'DeskController@createFolder');
 
+        $router->post('/update', 'DeskController@updateFolder');
+
         $router->post('/delete', 'DeskController@deleteFolder');
     });
 

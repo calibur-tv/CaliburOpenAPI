@@ -356,8 +356,7 @@ class CallbackController extends Controller
             $desk = Desk::create([
                 'hash' => $hash,
                 'meta' => $meta,
-                'user_id' => $userId,
-                'folder_id' => $request->get('folder_id') ?? 0
+                'user_id' => $userId
             ]);
         }
 
