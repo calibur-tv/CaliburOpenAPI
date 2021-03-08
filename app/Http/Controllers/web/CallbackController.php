@@ -334,7 +334,8 @@ class CallbackController extends Controller
         }
 
         $path = $request->get('filename');
-        $prefix = explode('/', $path)[0];
+        $arr = explode('/', $path);
+        $prefix = $arr[0];
         $userId = str_replace('user-', '', $prefix);
         $meta = $request->all();
         $hash =$request->get('hash');
@@ -356,11 +357,11 @@ class CallbackController extends Controller
 
         if ($desk)
         {
-            // TODO：更新时间到现在
-            return $this->resOK();
+            return $this->resOK($desk);
         }
 
         $desk = Desk::create([
+            'name' => $arr[1],
             'hash' => $hash,
             'meta' => json_encode($meta),
             'user_id' => $userId

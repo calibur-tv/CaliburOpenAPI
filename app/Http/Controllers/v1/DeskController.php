@@ -78,6 +78,7 @@ class DeskController extends Controller
         $user = $request->user();
         $folders = Folder
             ::where('user_id', $user->id)
+            ->orderBy('id', 'DESC')
             ->get()
             ->toArray();
 
