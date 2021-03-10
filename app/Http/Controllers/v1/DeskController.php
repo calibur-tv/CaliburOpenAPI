@@ -87,7 +87,11 @@ class DeskController extends Controller
             'id' => 0
         ]);
 
-        return $this->resOK($folders);
+        return $this->resOK([
+            'result' => $folders,
+            'total' => count($folders),
+            'no_more' => true
+        ]);
     }
 
     public function files(Request $request)
