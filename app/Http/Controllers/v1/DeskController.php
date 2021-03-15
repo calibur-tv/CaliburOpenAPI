@@ -82,7 +82,7 @@ class DeskController extends Controller
             ->get()
             ->toArray();
 
-        array_push($folders, [
+        array_unshift($folders, [
             'name' => '默认文件夹',
             'id' => 0
         ]);

@@ -363,7 +363,7 @@ class CallbackController extends Controller
         $desk = Desk::create([
             'name' => $arr[1],
             'hash' => $hash,
-            'meta' => json_encode($meta),
+            'meta' => $meta,
             'user_id' => $userId
         ]);
 
