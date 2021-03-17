@@ -26,6 +26,8 @@ class Desk extends Model
 
     public function getMetaAttribute($meta)
     {
-        return json_decode($meta);
+        $result = json_decode($meta);
+        $result->url = 'https://web.calibur.tv/' . $result->filename;
+        return $result;
     }
 }
