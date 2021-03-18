@@ -18,6 +18,8 @@ class UserAuthResource extends JsonResource
             'id' => $this->id,
             'slug' => $this->slug,
             'nickname' => $this->nickname,
+            'desk_max_space' => $this->desk_max_space,
+            'desk_use_space' => $this->desk_use_space,
             'title' => [],
             'providers' => [
                 'bind_qq' => !!$this->qq_unique_id,
