@@ -14,8 +14,8 @@ class Note extends Model
 
     protected $fillable = [
         'title',
-        'type',
-        'parent_id',
-        'plugin_id'
+        'type',         // 类型：文章、评论、图集、问题、答案、投票、视频
+        'parent_id',    // 归属：如果是文章，那就是 zone_id，如果是评论，那就是文章 id
+        'plugins'       // 插件：是一个 json，可以插入其它的模型
     ];
 }

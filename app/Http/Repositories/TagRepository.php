@@ -11,7 +11,7 @@ namespace App\Http\Repositories;
 
 use App\Http\Transformers\Tag\TagResource;
 use App\Models\QuestionRule;
-use App\Models\Tag;
+use App\Models\Zone;
 use App\User;
 
 class TagRepository extends Repository
@@ -25,14 +25,14 @@ class TagRepository extends Repository
 
         $result = $this->RedisItem("tag:{$slug}", function () use ($slug)
         {
-            $tag = Tag
+            $tag = Zone
                 ::where('slug', $slug)
                 ->with('content')
                 ->first();
 
             if (is_null($tag))
             {
-                $tag = Tag
+                $tag = Zone
                     ::where('id', $slug)
                     ->with('content')
                     ->first();
@@ -58,7 +58,7 @@ class TagRepository extends Repository
     {
         $result = $this->RedisArray("tag-{$slug}-children", function () use ($slug)
         {
-            $tag = Tag
+            $tag = Zone
                 ::where('parent_slug', $slug)
                 ->orderBy('activity_stat', 'desc')
                 ->orderBy('pin_count', 'desc')
@@ -87,7 +87,7 @@ class TagRepository extends Repository
     {
         $result = $this->RedisArray('hottest-channel', function ()
         {
-            $tag = Tag
+            $tag = Zone
                 ::orderBy('activity_stat', 'desc')
                 ->orderBy('pin_count', 'desc')
                 ->orderBy('followers_count', 'desc')
@@ -106,7 +106,7 @@ class TagRepository extends Repository
     {
         $result = $this->RedisArray('tag-all-search', function ()
         {
-            $tag = Tag
+            $tag = Zone
                 ::whereIn('parent_slug', [
                     config('app.tag.bangumi'),
                     config('app.tag.topic'),

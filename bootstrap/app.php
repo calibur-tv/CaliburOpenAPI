@@ -71,6 +71,8 @@ $app->configure('database');
 
 $app->configure('sentry');
 
+$app->configure('permission');
+
 /*
 |--------------------------------------------------------------------------
 | Register Middleware
@@ -92,9 +94,11 @@ $app->routeMiddleware([
     'user' => App\Http\Middleware\UserMiddleware::class,
     'throttle' => App\Http\Middleware\ThrottleMiddleware::class,
     'geetest' => App\Http\Middleware\GeetestMiddleware::class,
-//    'permission' => Spatie\Permission\Middlewares\PermissionMiddleware::class,
-//    'role' => Spatie\Permission\Middlewares\RoleMiddleware::class,
+    'permission' => Spatie\Permission\Middlewares\PermissionMiddleware::class,
+    'role' => Spatie\Permission\Middlewares\RoleMiddleware::class,
 ]);
+
+$app->alias('cache', \Illuminate\Cache\CacheManager::class);
 /*
 |--------------------------------------------------------------------------
 | Register Service Providers
@@ -109,7 +113,7 @@ $app->register(App\Providers\AppServiceProvider::class);
 $app->register(App\Providers\AuthServiceProvider::class);
 $app->register(App\Providers\EventServiceProvider::class);
 $app->register(App\Providers\QueryLogServiceProvider::class);
-
+$app->register(Spatie\Permission\PermissionServiceProvider::class);
 $app->register(Mews\Purifier\PurifierServiceProvider::class);
 $app->register(Fruitcake\Cors\CorsServiceProvider::class);
 $app->register(Hhxsv5\LaravelS\Illuminate\LaravelSServiceProvider::class);

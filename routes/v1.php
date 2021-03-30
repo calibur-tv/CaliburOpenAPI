@@ -53,7 +53,7 @@ $router->group(['prefix' => 'sign'], function () use ($router)
     });
 });
 
-$router->group(['prefix' => '/desk', 'middleware' => 'auth'], function () use ($router)
+$router->group(['prefix' => 'desk', 'middleware' => 'auth'], function () use ($router)
 {
     $router->get('/upload_token', 'DeskController@token');
 
@@ -75,5 +75,41 @@ $router->group(['prefix' => '/desk', 'middleware' => 'auth'], function () use ($
         $router->post('/move', 'DeskController@moveFile');
 
         $router->post('/delete', 'DeskController@deleteFile');
+    });
+});
+
+$router->group(['prefix' => 'cm'], function () use ($router)
+{
+    $router->get('index_banner', 'CmController@showBanners');
+
+    $router->post('report_banner', 'CmController@reportBannerStat');
+});
+
+$router->group(['prefix' => 'console', 'middleware' => 'auth'], function () use ($router)
+{
+    $router->group(['prefix' => 'cm'], function () use ($router)
+    {
+        $router->get('show_all_banner', 'CmController@allBanners');
+
+        $router->post('create_banner', 'CmController@createBanner');
+
+        $router->post('update_banner', 'CmController@updateBanner');
+
+        $router->post('toggle_banner', 'CmController@toggleBanner');
+    });
+
+    $router->group(['prefix' => 'role'], function () use ($router)
+    {
+        $router->get('show_all_roles', 'RoleController@showAllRoles');
+
+        $router->get('show_all_users', 'RoleController@getUsersByCondition');
+
+        $router->post('create_role', 'RoleController@createRole');
+
+        $router->post('create_permission', 'RoleController@createPermission');
+
+        $router->post('toggle_permission_to_role', 'RoleController@togglePermissionToRole');
+
+        $router->post('toggle_role_to_user', 'RoleController@toggleRoleToUser');
     });
 });

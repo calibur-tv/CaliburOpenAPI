@@ -11,7 +11,7 @@ namespace App\Http\Repositories;
 
 use App\Http\Transformers\PinResource;
 use App\Models\Pin;
-use App\Models\Tag;
+use App\Models\Zone;
 
 class PinRepository extends Repository
 {
