@@ -5,6 +5,7 @@ namespace App\Http\Controllers\v1;
 use App\Http\Controllers\Controller;
 use App\Http\Repositories\UserRepository;
 use App\Http\Transformers\User\UserAuthResource;
+use App\Services\Geetest\Captcha;
 use App\Services\Sms\Message;
 use App\Modules\WXBizDataCrypt;
 use App\Services\Socialite\AccessToken;
@@ -149,6 +150,22 @@ class SignController extends Controller
         return $this->resOK([
             'is_new' => $isNew
         ]);
+    }
+
+    /**
+     * 获取 Geetest 验证码
+     *
+     * @Get("/image/captcha")
+     *
+     * @Transaction({
+     *      @Response(200, body={"code": 0, "data": {"success": "数字0或1", "gt": "Geetest.gt", "challenge": "Geetest.challenge", "payload": "字符串荷载"}})
+     * })
+     */
+    public function captcha()
+    {
+        $captcha = new Captcha();
+
+        return $this->resOK($captcha->get());
     }
 
     /**
