@@ -11,6 +11,25 @@ Resources:
           - vsw-uf6cc40fjn4ljk3whlzdo
         SecurityGroupId: sg-uf6i1r3ycwoin71f7dr7
 
+    lumen-timer:
+      Type: 'Aliyun::Serverless::Function'
+      Properties:
+        Handler: server.handler
+        Runtime: custom
+        MemorySize: 512
+        Timeout: 30
+        CodeUri: './'
+        InstanceConcurrency: 10
+        EnvironmentVariables:
+          BOOTSTRAP_FILE: bootstrap_cron
+
+      Events:
+        cron-lumen-server:
+          Type: Timer
+          Properties:
+            CronExpression: '0 */1 * * * *'
+            Enable: true
+
     lumen-server:
       Type: 'Aliyun::Serverless::Function'
       Properties:
