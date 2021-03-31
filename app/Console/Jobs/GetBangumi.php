@@ -43,6 +43,12 @@ class GetBangumi extends Command
             }
 
             $id = $body['id'];
+            if (Bangumi::where('bgm_id', $id)->count())
+            {
+                $this->incrLastId($lastId);
+                return true;
+            }
+
             $name = $body['name_cn'] ? $body['name_cn'] : $body['name'];
             $alias = array_filter(array_unique([$body['name_cn'], $body['name']]), function ($name)
             {
