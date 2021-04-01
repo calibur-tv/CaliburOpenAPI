@@ -16,8 +16,8 @@ Resources:
       Properties:
         Handler: server.handler
         Runtime: custom
-        MemorySize: 512
-        Timeout: 30
+        MemorySize: 1024
+        Timeout: 55
         CodeUri: './'
         InstanceConcurrency: 10
         EnvironmentVariables:
@@ -35,8 +35,8 @@ Resources:
       Properties:
         Handler: server.handler
         Runtime: custom
-        MemorySize: 512
-        Timeout: 30
+        MemorySize: 1024
+        Timeout: 5
         CodeUri: './'
         InstanceConcurrency: 10
         EnvironmentVariables:

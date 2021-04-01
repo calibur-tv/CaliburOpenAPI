@@ -27,14 +27,14 @@ class Test extends Command
      */
     public function handle()
     {
-        $counter = Redis::GET('cron_counter');
+        $counter = Redis::GET('cron_runner');
         if ($counter)
         {
-            Redis::SET('cron_counter', intval($counter) + 1);
+            Redis::SET('cron_runner', intval($counter) + 1);
         }
         else
         {
-            Redis::SET('cron_counter', 1);
+            Redis::SET('cron_runner', 1);
         }
         return true;
     }

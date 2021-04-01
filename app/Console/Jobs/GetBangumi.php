@@ -96,6 +96,8 @@ class GetBangumi extends Command
                     Redis::RPUSH('cron_bgm_failed_id', $id);
                 }
             }
+
+            Redis::SET($lastPageKey, intval($lastPage) + 1);
         }
         catch (\Exception $e)
         {
