@@ -146,7 +146,7 @@ class Query
 
                     return [
                         'bgm_id' => $id,
-                        'name' => $name_1,
+                        'name' => $name_2 ? $name_2 : $name_1,
                         'alias' => $alias,
                         'avatar' => $avatar
                     ];
