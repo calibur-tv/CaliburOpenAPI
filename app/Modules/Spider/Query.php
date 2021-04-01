@@ -207,58 +207,6 @@ class Query
         }
     }
 
-    public function getIdolDetail($id)
-    {
-        try
-        {
-            $url = "http://bgm.tv/character/{$id}";
-            $ql = QueryList::get($url, [], $this::$opts);
-
-            $avatar = $ql->find('.infobox')->eq(0)->find('img')->eq(0)->src;
-            $meta = explode(PHP_EOL, $ql->find('#infobox')->text());
-            $extra = [];
-            foreach ($meta as $item)
-            {
-                $arr = explode(': ', $item);
-                $extra[$arr[0]] = $arr[1];
-            }
-
-            $detail = trim($ql->find('.detail')->text());
-            $extra['alias'] = [];
-            $validate = false;
-            if (isset($extra['简体中文名']))
-            {
-                $validate = true;
-                $extra['alias'][] = $extra['简体中文名'];
-            }
-            if (isset($extra['别名']))
-            {
-                $validate = true;
-                $extra['alias'][] = $extra['别名'];
-            }
-
-            if (!$validate)
-            {
-                return null;
-            }
-
-            $extra['alias'] = array_unique($extra['alias']);
-
-            return [
-                'id' => $id,
-                'avatar' => "http:{$avatar}",
-                'name' => $extra['alias'][0],
-                'intro' => $detail,
-                'alias' => array_values($extra['alias'])
-            ];
-        }
-        catch (\Exception $e)
-        {
-            Log::info("[--spider--]：get idol {$id} failed");
-            return null;
-        }
-    }
-
     public function getBangumiDetail($id)
     {
         try

@@ -30,8 +30,8 @@ class GetCharacter extends Command
      */
     public function handle()
     {
-        $failedListKey = 'cron_character_failed_page';
-        $lastIdKey = 'bgm_character_last_page';
+        $failedListKey = 'cron_character_failed_page2';
+        $lastIdKey = 'bgm_character_last_page2';
         $lastId = Redis::GET($lastIdKey) ?: 1;
         $query = new Query();
         try
@@ -53,6 +53,12 @@ class GetCharacter extends Command
 
             foreach ($list as $character)
             {
+                $item = Character::where('bgm_id', $character['bgm_id'])->first();
+                if ($item)
+                {
+                    continue;
+                }
+
                 Character::createCharacter($character);
             }
 
