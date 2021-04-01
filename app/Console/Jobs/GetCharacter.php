@@ -37,6 +37,11 @@ class GetCharacter extends Command
         try
         {
             $bangumi = Bangumi::where('id', $lastId)->first();
+            if (!$bangumi)
+            {
+                return true;
+            }
+
             $list = $query->getBangumiCharacters($bangumi->bgm_id);
 
             if (empty($list))
