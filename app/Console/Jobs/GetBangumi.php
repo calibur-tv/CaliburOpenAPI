@@ -52,48 +52,45 @@ class GetBangumi extends Command
                 return true;
             }
 
-            foreach ($ids as $id)
+            foreach ($ids as $bgm_id)
             {
                 try
                 {
-                    $resp = $client->get('http://api.bgm.tv/subject/' . $id);
+                    $resp = $client->get('http://api.bgm.tv/subject/' . $bgm_id);
                     $body = json_decode($resp->getBody(), true);
                     if ($body['type'] != 2)
                     {
                         continue;
                     }
 
-                    $id = $body['id'];
-                    if (Bangumi::where('bgm_id', $id)->count())
+                    if (Bangumi::where('bgm_id', $bgm_id)->count())
                     {
                         continue;
                     }
 
-                    $name = $body['name_cn'] ? $body['name_cn'] : $body['name'];
+                    $title = $body['name_cn'] ? $body['name_cn'] : $body['name'];
                     $alias = array_filter(array_unique([$body['name_cn'], $body['name']]), function ($name)
                     {
                         return !!$name;
                     });
+                    $alias = implode('|', $alias);
                     $avatar = $body['images']['large'];
                     $intro = trim($body['summary']);
-                    $publish_at = $this->formatPublish($body['air_date']);
-
-                    $bangumi = Bangumi::create([
-                        'title' => $name,
-                        'alias' => implode('|', $alias),
+                    $published_at = $this->formatPublish($body['air_date']);
+                    $data = [
+                        'title' => $title,
+                        'alias' => $alias,
                         'intro' => $intro,
                         'avatar' => $avatar,
-                        'bgm_id' => $id,
-                        'published_at' => $publish_at
-                    ]);
+                        'bgm_id' => $bgm_id,
+                        'published_at' => $published_at
+                    ];
 
-                    $bangumi->update([
-                        'slug' => id2slug($bangumi->id)
-                    ]);
+                    Bangumi::createBangumi($data);
                 }
                 catch (\Exception $e)
                 {
-                    Redis::RPUSH('cron_bgm_failed_id', $id);
+                    Redis::RPUSH('cron_bgm_failed_id', $bgm_id);
                 }
             }
 

@@ -18,4 +18,14 @@ class Bangumi extends Model
         'update_week', // 0：不更新，1 ~ 7：星期一 ~ 星期日
         'published_at'
     ];
+
+    public static function createBangumi($data)
+    {
+        $bangumi = self::create($data);
+        $bangumi->update([
+            'slug' => id2slug($bangumi->id)
+        ]);
+
+        return $bangumi;
+    }
 }
