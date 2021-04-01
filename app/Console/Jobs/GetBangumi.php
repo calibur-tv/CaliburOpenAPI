@@ -3,6 +3,7 @@
 namespace App\Console\Jobs;
 
 use App\Models\Bangumi;
+use App\Modules\Spider\Query;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Console\Command;
@@ -30,61 +31,79 @@ class GetBangumi extends Command
      */
     public function handle()
     {
-        $lastId = Redis::GET('cron_bgm_id') ?: 1;
+        $failedListKey = 'cron_bgm_failed_page';
+        $lastPageKey = 'rank_bgm_last_page';
+        $query = new Query();
         $client = new Client();
+        $lastPage = Redis::GET($lastPageKey) ?: 1;
+
+        if (intval($lastPage) >= 260)
+        {
+            return true;
+        }
+
         try
         {
-            $resp = $client->get('http://api.bgm.tv/subject/' . $lastId);
-            $body = json_decode($resp->getBody(), true);
-            if ($body['type'] != 2)
+            $ids = $query->getRankBangumiIds($lastPage);
+            if (empty($ids))
             {
-                $this->incrLastId($lastId);
+                Redis::RPUSH($failedListKey, $lastPage);
+                Redis::SET($lastPageKey, intval($lastPage) + 1);
                 return true;
             }
 
-            $id = $body['id'];
-            if (Bangumi::where('bgm_id', $id)->count())
+            foreach ($ids as $id)
             {
-                $this->incrLastId($lastId);
-                return true;
+                try
+                {
+                    $resp = $client->get('http://api.bgm.tv/subject/' . $id);
+                    $body = json_decode($resp->getBody(), true);
+                    if ($body['type'] != 2)
+                    {
+                        continue;
+                    }
+
+                    $id = $body['id'];
+                    if (Bangumi::where('bgm_id', $id)->count())
+                    {
+                        continue;
+                    }
+
+                    $name = $body['name_cn'] ? $body['name_cn'] : $body['name'];
+                    $alias = array_filter(array_unique([$body['name_cn'], $body['name']]), function ($name)
+                    {
+                        return !!$name;
+                    });
+                    $avatar = $body['images']['large'];
+                    $intro = trim($body['summary']);
+                    $publish_at = $this->formatPublish($body['air_date']);
+
+                    $bangumi = Bangumi::create([
+                        'title' => $name,
+                        'alias' => implode('|', $alias),
+                        'intro' => $intro,
+                        'avatar' => $avatar,
+                        'bgm_id' => $id,
+                        'published_at' => $publish_at
+                    ]);
+
+                    $bangumi->update([
+                        'slug' => id2slug($bangumi->id)
+                    ]);
+                }
+                catch (\Exception $e)
+                {
+                    Redis::RPUSH('cron_bgm_failed_id', $id);
+                }
             }
-
-            $name = $body['name_cn'] ? $body['name_cn'] : $body['name'];
-            $alias = array_filter(array_unique([$body['name_cn'], $body['name']]), function ($name)
-            {
-                return !!$name;
-            });
-            $avatar = $body['images']['large'];
-            $intro = trim($body['summary']);
-            $publish_at = $this->formatPublish($body['air_date']);
-
-            $bangumi = Bangumi::create([
-                'title' => $name,
-                'alias' => implode('|', $alias),
-                'intro' => $intro,
-                'avatar' => $avatar,
-                'bgm_id' => $id,
-                'published_at' => $publish_at
-            ]);
-
-            $bangumi->update([
-                'slug' => id2slug($bangumi->id)
-            ]);
-
-            $this->incrLastId($lastId);
         }
         catch (\Exception $e)
         {
-            Redis::RPUSH('cron_bgm_failed_id', $lastId);
-            $this->incrLastId($lastId);
+            Redis::RPUSH($failedListKey, $lastPage);
+            Redis::SET($lastPageKey, intval($lastPage) + 1);
         }
 
         return true;
-    }
-
-    private function incrLastId($lastId)
-    {
-        Redis::SET('cron_bgm_id', intval($lastId) + 1);
     }
 
     private function formatPublish($publish)

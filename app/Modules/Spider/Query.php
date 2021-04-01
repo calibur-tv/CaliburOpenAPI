@@ -7,6 +7,7 @@ namespace App\Modules\Spider;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
 use QL\QueryList;
+use GuzzleHttp\Client;
 
 class Query
 {
@@ -23,6 +24,21 @@ class Query
             'Upgrade-Insecure-Requests' => '1'
         ]
     ];
+
+    public function __construct()
+    {
+        $ql = QueryList::getInstance();
+        $ql->bind('guzzle', function ($url)
+        {
+            $client = new Client();
+            $resp = $client->get($url);
+            $body = $resp->getBody();
+            $this->setHtml($body);
+            return $this;
+        });
+
+        $this->query = $ql;
+    }
 
     public function fetchMeta($url)
     {
@@ -177,14 +193,13 @@ class Query
         }
     }
 
-    public function getBangumiList($page)
+    public function getRankBangumiIds($page)
     {
         try
         {
-            $url = "http://bgm.tv/anime/browser?sort=rank&page={$page}";
-            $ql = QueryList::get($url, [], $this::$opts);
-
-            $ids = $ql
+            $ids = $this
+                ->query
+                ->guzzle("http://bgm.tv/anime/browser?sort=rank&page={$page}")
                 ->find('#browserItemList')
                 ->children()
                 ->map(function ($item)
@@ -193,23 +208,10 @@ class Query
                 })
                 ->all();
 
-            $result = [];
-
-            foreach ($ids as $id)
-            {
-                $result[] = $this->getBangumiDetail($id);
-            }
-
-            $result = array_filter($result, function ($item)
-            {
-                return !!$item;
-            });
-
-            return $result;
+            return $ids;
         }
         catch (\Exception $e)
         {
-            Log::info("[--spider--]：get bangumi page {$page} failed");
             return [];
         }
     }
