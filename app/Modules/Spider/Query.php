@@ -122,50 +122,41 @@ class Query
         }
     }
 
-    public function getBangumiIdols($id)
+    public function getBangumiCharacters($id)
     {
         try
         {
-            $url = "http://bgm.tv/subject/{$id}/characters";
-            $ql = QueryList::get($url, [], $this::$opts);
-            $result = $ql
+            $result = $this
+                ->query
+                ->guzzle("http://bgm.tv/subject/{$id}/characters")
                 ->find('.light_odd')
-                ->filter(':has(h2 .tip)')
                 ->map(function ($item)
                 {
                     $id = last(explode('/', $item->find('a.avatar')->eq(0)->href));
-                    $name = str_replace('/ ', '', $item->find('h2 span')->text());
-                    $meta = explode(' / ', $item->find('.crt_info .tip')->text());
-                    $meta = array_map(function ($val)
+                    $name_1 = $item->find('h2 a')->text();
+                    $name_2 = str_replace('/ ', '', $item->find('h2 span')->text());
+                    $avatar = str_replace('/g/', '/l/', $item->find('img.avatar')->eq(0)->src);
+
+                    $alias = array_filter(array_unique([$name_1, $name_2]), function ($name)
                     {
-                        $arr = explode(' ', $val);
-                        return count($arr) === 2 ? $arr[1] : '';
-                    }, $meta);
+                        return !!$name;
+                    });
+
+                    $alias = count($alias) > 1 ? implode('|', $alias) : $alias[0];
 
                     return [
-                        'id' => $id,
-                        'name' => $name,
-                        'sex' => $meta[0] ?? '',
-                        'birthday' => $meta[1] ?? ''
+                        'bgm_id' => $id,
+                        'name' => $name_1,
+                        'alias' => $alias,
+                        'avatar' => $avatar
                     ];
                 })
                 ->all();
-
-            $result = array_filter($result, function ($item)
-            {
-                return (isset($item['sex']) && $item['sex']) && (isset($item['birthday']) && $item['birthday']);
-            });
-
-            $result = array_map(function ($item)
-            {
-                return $item['id'];
-            }, $result);
 
             return $result;
         }
         catch (\Exception $e)
         {
-            Log::info("[--spider--]：get bangumi - idol {$id} failed");
             return false;
         }
     }

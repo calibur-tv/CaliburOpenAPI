@@ -14,4 +14,14 @@ class Character extends Model
         'intro',
         'avatar'
     ];
+
+    public static function createCharacter($data)
+    {
+        $character = self::create($data);
+        $character->update([
+            'slug' => id2slug($character->id)
+        ]);
+
+        return $character;
+    }
 }
