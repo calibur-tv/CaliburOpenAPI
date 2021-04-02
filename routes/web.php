@@ -14,9 +14,7 @@
 
 $router->get('/', function () use ($router)
 {
-    $query = new \App\Modules\Spider\Query();
-    $result = $query->getBangumiIdols(876);
-    return $result;
+    return 'hello guys~';
 });
 
 $router->group(['prefix' => '/callback'], function () use ($router)

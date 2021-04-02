@@ -16,6 +16,7 @@ class Kernel extends ConsoleKernel
         Jobs\Test::class,
         Jobs\GetBangumi::class,
         Jobs\GetCharacter::class,
+        Jobs\SetSearch::class,
     ];
 
     /**
@@ -28,5 +29,6 @@ class Kernel extends ConsoleKernel
     {
         $schedule->command('Test')->everyMinute();
         $schedule->command('GetCharacter')->everyMinute();
+        $schedule->command('SetSearch')->everyMinute();
     }
 }

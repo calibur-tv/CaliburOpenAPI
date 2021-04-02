@@ -23,6 +23,7 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
      * @var array
      */
     protected $fillable = [
+        'slug',
         'phone',
         'nickname',
         'invitor_id',
@@ -33,7 +34,8 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
         'qq_open_id',
         'qq_unique_id',
         'desk_max_space',
-        'desk_use_space'
+        'desk_use_space',
+        'migration_state'
     ];
 
     /**
@@ -87,6 +89,12 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
         $user->slug = $slug;
         $user->api_token = $user->createApiToken();
         $user->invitor_id = $data['invitor_id'] ?? '';
+
+        Search::createSearch([
+            'uuid' => $user->id,
+            'text' => $user->nickname,
+            'type' => 1
+        ]);
 
         return $user;
     }

@@ -13,7 +13,8 @@ class Character extends Model
         'alias',
         'intro',
         'avatar',
-        'bgm_id'
+        'bgm_id',
+        'migration_state'
     ];
 
     public static function createCharacter($data)
@@ -21,6 +22,12 @@ class Character extends Model
         $character = self::create($data);
         $character->update([
             'slug' => id2slug($character->id)
+        ]);
+
+        Search::createSearch([
+            'uuid' => $character->id,
+            'text' => $character->alias,
+            'type' => 3
         ]);
 
         return $character;

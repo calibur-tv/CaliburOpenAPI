@@ -16,7 +16,8 @@ class Bangumi extends Model
         'bgm_id',
         'bili_id',
         'update_week', // 0：不更新，1 ~ 7：星期一 ~ 星期日
-        'published_at'
+        'published_at',
+        'migration_state'
     ];
 
     public static function createBangumi($data)
@@ -24,6 +25,12 @@ class Bangumi extends Model
         $bangumi = self::create($data);
         $bangumi->update([
             'slug' => id2slug($bangumi->id)
+        ]);
+
+        Search::createSearch([
+            'uuid' => $bangumi->id,
+            'text' => $bangumi->alias,
+            'type' => 2
         ]);
 
         return $bangumi;
