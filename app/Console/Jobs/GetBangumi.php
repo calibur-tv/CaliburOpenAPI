@@ -3,6 +3,7 @@
 namespace App\Console\Jobs;
 
 use App\Models\Bangumi;
+use App\Modules\AliyunOSS;
 use App\Modules\Spider\Query;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Redis;
@@ -35,6 +36,7 @@ class GetBangumi extends Command
         $lastPageKey = 'rank_bgm_last_page';
         $query = new Query();
         $client = new Client();
+        $aliyunOSS = new AliyunOSS();
         $lastPage = Redis::GET($lastPageKey) ?: 1;
 
         if (intval($lastPage) >= 260)
@@ -75,6 +77,7 @@ class GetBangumi extends Command
                     });
                     $alias = implode('|', $alias);
                     $avatar = $body['images']['large'];
+                    $avatar = $aliyunOSS->fetch($avatar);
                     $intro = trim($body['summary']);
                     $published_at = $this->formatPublish($body['air_date']);
                     $data = [
@@ -83,7 +86,8 @@ class GetBangumi extends Command
                         'intro' => $intro,
                         'avatar' => $avatar,
                         'bgm_id' => $bgm_id,
-                        'published_at' => $published_at
+                        'published_at' => $published_at,
+                        'migration_state' => 3
                     ];
 
                     Bangumi::createBangumi($data);

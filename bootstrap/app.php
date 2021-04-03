@@ -10,6 +10,7 @@ define('FC_LOG_TAIL_START_PREFIX', 'FC Invoke Start RequestId: '); // Start of l
 
 define('FC_LOG_TAIL_END_PREFIX', 'FC Invoke End RequestId: '); // End of log tail mark
 
+date_default_timezone_set('Asia/Shanghai');
 /*
 |--------------------------------------------------------------------------
 | Create The Application

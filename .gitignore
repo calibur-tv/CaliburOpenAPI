@@ -8,4 +8,5 @@ Homestead.yaml
 .env
 .env.*
 .phpunit.result.cache
+.DS_Store
 phplint.cache

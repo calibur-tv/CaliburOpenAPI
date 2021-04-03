@@ -4,6 +4,7 @@ namespace App\Console\Jobs;
 
 use App\Models\Bangumi;
 use App\Models\Character;
+use App\Modules\AliyunOSS;
 use App\Modules\Spider\Query;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Console\Command;
@@ -34,6 +35,7 @@ class GetCharacter extends Command
         $lastIdKey = 'bgm_character_last_page2';
         $lastId = Redis::GET($lastIdKey) ?: 1;
         $query = new Query();
+        $aliyunOSS = new AliyunOSS();
         try
         {
             $bangumi = Bangumi::where('id', $lastId)->first();
@@ -58,6 +60,9 @@ class GetCharacter extends Command
                 {
                     continue;
                 }
+
+                $character['avatar'] = $aliyunOSS->fetch($character['avatar']);
+                $character['migration_state'] = 3;
 
                 Character::createCharacter($character);
             }

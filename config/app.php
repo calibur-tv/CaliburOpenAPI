@@ -135,7 +135,8 @@ return [
 
         'oss' => [
             'id' => env('ALIYUN_OSS_ID'),
-            'secret' => env('ALIYUN_OSS_SECRET')
+            'secret' => env('ALIYUN_OSS_SECRET'),
+            'endpoint' => env('ALIYUN_OSS_ENDPOINT'),
         ],
 
         'search' => [
