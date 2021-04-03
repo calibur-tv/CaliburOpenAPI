@@ -4,7 +4,6 @@
 namespace App\Modules;
 
 use OSS\OssClient;
-use OSS\Core\OssException;
 use GuzzleHttp\Client;
 
 class AliyunOSS
@@ -22,14 +21,13 @@ class AliyunOSS
 
     public function fetch($url)
     {
-        $name = 'users/' . $this->userId . '/' . time() . '-' . last(explode('/', $url));
         $resp = $this->guzzle->get($url);
-
         if ($resp->getStatusCode() !== 200)
         {
             return $url;
         }
 
+        $name = 'users/' . $this->userId . '/' . time() . '-' . last(explode('/', explode('?', $url)[0]));
         $result = $this->upload($resp->getBody(), $name);
 
         return $result ? $result : $url;
@@ -39,12 +37,17 @@ class AliyunOSS
     {
         try
         {
-            $this->oss->putObject($this->bucket, $name, $file);
+            $this->oss->putObject(
+                $this->bucket,
+                $name,
+                $file
+            );
+
             return $name;
         }
-        catch (OssException $e)
+        catch (\Exception $e)
         {
-            return '';
+            return $e;
         }
     }
 }
