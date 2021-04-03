@@ -130,6 +130,7 @@ class Query
                 ->query
                 ->guzzle("http://bgm.tv/subject/{$id}/characters")
                 ->find('.light_odd')
+                ->filter(':has(h2 .tip)')
                 ->map(function ($item)
                 {
                     $id = last(explode('/', $item->find('a.avatar')->eq(0)->href));
@@ -148,7 +149,7 @@ class Query
                         'bgm_id' => $id,
                         'name' => $name_2 ? $name_2 : $name_1,
                         'alias' => $alias,
-                        'avatar' => $avatar
+                        'avatar' => explode('?', $avatar)[0]
                     ];
                 })
                 ->all();

@@ -47,7 +47,7 @@ class AliyunOSS
         }
         catch (\Exception $e)
         {
-            return $e;
+            return '';
         }
     }
 }
