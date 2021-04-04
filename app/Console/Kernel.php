@@ -30,8 +30,8 @@ class Kernel extends ConsoleKernel
     {
         $schedule->command('Test')->everyMinute();
 //        $schedule->command('GetBangumi')->everyMinute();
-        $schedule->command('GetCharacter')->everyMinute();
-        $schedule->command('SetSearch')->everyMinute();
+//        $schedule->command('GetCharacter')->everyMinute();
+//        $schedule->command('SetSearch')->everyMinute();
 //        $schedule->command('SetAvatar')->everyMinute();
     }
 }
