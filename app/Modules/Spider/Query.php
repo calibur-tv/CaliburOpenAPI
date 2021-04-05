@@ -456,7 +456,12 @@ class Query
 
             $ts = strtotime($publish);
 
-            return Carbon::createFromTimestamp($ts);
+            $result = Carbon::createFromTimestamp($ts);
+            if ($result === '0000-00-00 00:00:00')
+            {
+                return null;
+            }
+            return $result;
         }
         catch (\Exception $e)
         {

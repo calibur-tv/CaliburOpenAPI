@@ -31,8 +31,8 @@ class GetCharacter extends Command
      */
     public function handle()
     {
-        $failedListKey = 'cron_character_failed_page3';
-        $lastIdKey = 'bgm_character_last_page3';
+        $failedListKey = 'cron_character_failed_page4';
+        $lastIdKey = 'bgm_character_last_page4';
         $lastId = Redis::GET($lastIdKey) ?: 1;
         $query = new Query();
         $aliyunOSS = new AliyunOSS();

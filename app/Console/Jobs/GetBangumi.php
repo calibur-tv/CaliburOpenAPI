@@ -32,8 +32,8 @@ class GetBangumi extends Command
      */
     public function handle()
     {
-        $failedListKey = 'cron_bgm_failed_page2';
-        $lastPageKey = 'rank_bgm_last_page2';
+        $failedListKey = 'cron_bgm_failed_page3';
+        $lastPageKey = 'rank_bgm_last_page3';
         $query = new Query();
         $client = new Client();
         $aliyunOSS = new AliyunOSS();
