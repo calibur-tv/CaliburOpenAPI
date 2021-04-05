@@ -15,9 +15,7 @@ class Kernel extends ConsoleKernel
     protected $commands = [
         Jobs\Test::class,
         Jobs\GetBangumi::class,
-        Jobs\GetCharacter::class,
-        Jobs\SetSearch::class,
-        Jobs\SetAvatar::class,
+        Jobs\GetCharacter::class
     ];
 
     /**
@@ -29,9 +27,7 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         $schedule->command('Test')->everyMinute();
-//        $schedule->command('GetBangumi')->everyMinute();
-//        $schedule->command('GetCharacter')->everyMinute();
-//        $schedule->command('SetSearch')->everyMinute();
-//        $schedule->command('SetAvatar')->everyMinute();
+        $schedule->command('GetBangumi')->everyMinute();
+        $schedule->command('GetCharacter')->everyMinute();
     }
 }

@@ -31,8 +31,8 @@ class GetCharacter extends Command
      */
     public function handle()
     {
-        $failedListKey = 'cron_character_failed_page2';
-        $lastIdKey = 'bgm_character_last_page2';
+        $failedListKey = 'cron_character_failed_page3';
+        $lastIdKey = 'bgm_character_last_page3';
         $lastId = Redis::GET($lastIdKey) ?: 1;
         $query = new Query();
         $aliyunOSS = new AliyunOSS();
@@ -61,7 +61,7 @@ class GetCharacter extends Command
                     continue;
                 }
 
-                $character['avatar'] = $aliyunOSS->fetch($character['avatar']);
+                $character['avatar'] = $aliyunOSS->fetch($character['avatar'], 'character');
                 $character['migration_state'] = 3;
 
                 Character::createCharacter($character);

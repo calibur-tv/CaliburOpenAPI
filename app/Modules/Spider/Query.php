@@ -126,39 +126,57 @@ class Query
     {
         try
         {
-            $result = $this
+            $ids = $this
                 ->query
                 ->guzzle("http://bgm.tv/subject/{$id}/characters")
                 ->find('.light_odd')
                 ->filter(':has(h2 .tip)')
                 ->map(function ($item)
                 {
-                    $id = last(explode('/', $item->find('a.avatar')->eq(0)->href));
-                    $name_1 = $item->find('h2 a')->text();
-                    $name_2 = str_replace('/ ', '', $item->find('h2 span')->text());
-                    $avatar = str_replace('/g/', '/l/', $item->find('img.avatar')->eq(0)->src);
-
-                    $alias = array_filter(array_unique([$name_1, $name_2]), function ($name)
+                    $tips = $item->find('.tip_j')->count();
+                    $talk = $item->find('.rr')->find('.na')->text();
+                    $cv = $item->find('.actorBadge')->count();
+                    if (!$cv)
                     {
-                        return !!$name;
-                    });
-
-                    $alias = count($alias) > 1 ? implode('|', $alias) : $alias[0];
-
-                    return [
-                        'bgm_id' => $id,
-                        'name' => $name_2 ? $name_2 : $name_1,
-                        'alias' => $alias,
-                        'avatar' => explode('?', $avatar)[0]
-                    ];
+                        return 0;
+                    }
+                    $talk = str_replace('+', '', $talk);
+                    $talk = str_replace('(', '', $talk);
+                    $talk = str_replace(')', '', $talk);
+                    $talk = $talk ? intval($talk) : 0;
+                    if ($tips < 2 && $talk < 10)
+                    {
+                        return 0;
+                    }
+                    return last(explode('/', $item->find('a.avatar')->eq(0)->href));
                 })
                 ->all();
+
+            $ids = array_filter($ids, function ($item)
+            {
+                return !!$item;
+            });
+
+//            $ids = array_slice($ids, 0, 50);
+
+            $result = [];
+            foreach ($ids as $id)
+            {
+                $character = $this->getCharacter($id);
+                if ($character)
+                {
+                    $result[] = $character;
+                }
+            }
 
             return $result;
         }
         catch (\Exception $e)
         {
-            return false;
+            Log::info('get bangumi characters', [
+                'message' => $e
+            ]);
+            return [];
         }
     }
 
@@ -204,7 +222,100 @@ class Query
         }
         catch (\Exception $e)
         {
+            Log::info('get rank bangumi ids', [
+                'message' => $e
+            ]);
             return [];
+        }
+    }
+
+    public function getCharacter($id)
+    {
+        try
+        {
+            $ql = $this->query->guzzle("http://bgm.tv/character/{$id}");
+            $avatar = $ql->find('.infobox')->eq(0)->find('img')->eq(0)->src;
+            $meta = explode(PHP_EOL, $ql->find('#infobox')->text());
+            $extra = [];
+            foreach ($meta as $item)
+            {
+                $arr = explode(': ', $item);
+                if (isset($extra[$arr[0]]))
+                {
+                    if (gettype($extra[$arr[0]]) === 'string')
+                    {
+                        $extra[$arr[0]] = [$extra[$arr[0]]];
+                    }
+                    $extra[$arr[0]][] = $arr[1];
+                }
+                else
+                {
+                    $extra[$arr[0]] = $arr[1];
+                }
+            }
+
+            $detail = trim($ql->find('.detail')->text());
+            $extra['alias'] = [];
+            $validate = false;
+            if (isset($extra['简体中文名']) && $extra['简体中文名'] === '广播')
+            {
+                return null;
+            }
+
+            if (isset($extra['简体中文名']))
+            {
+                $validate = true;
+                if (gettype($extra['简体中文名']) === 'string')
+                {
+                    $extra['alias'][] = $extra['简体中文名'];
+                }
+                else
+                {
+                    $extra['alias'] = array_merge($extra['alias'], $extra['简体中文名']);
+                }
+            }
+
+            if (isset($extra['别名']))
+            {
+                $validate = true;
+                if (gettype($extra['别名']) === 'string')
+                {
+                    $extra['alias'][] = $extra['别名'];
+                }
+                else
+                {
+                    $extra['alias'] = array_merge($extra['alias'], $extra['别名']);
+                }
+            }
+
+            if (!$validate)
+            {
+                return null;
+            }
+
+            $extra['alias'] = array_unique($extra['alias']);
+            $alias = array_values($extra['alias']);
+            $alias = count($alias) > 1 ? implode('|', $alias) : $alias[0];
+
+            if (!$detail)
+            {
+                return null;
+            }
+
+            return [
+                'bgm_id' => $id,
+                'avatar' => "http:{$avatar}",
+                'name' => $extra['alias'][0],
+                'intro' => $detail,
+                'alias' => $alias
+            ];
+        }
+        catch (\Exception $e)
+        {
+            Log::info('get character', [
+                'message' => $e
+            ]);
+            return null;
         }
     }
 

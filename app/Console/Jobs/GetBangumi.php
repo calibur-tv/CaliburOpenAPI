@@ -32,8 +32,8 @@ class GetBangumi extends Command
      */
     public function handle()
     {
-        $failedListKey = 'cron_bgm_failed_page';
-        $lastPageKey = 'rank_bgm_last_page';
+        $failedListKey = 'cron_bgm_failed_page2';
+        $lastPageKey = 'rank_bgm_last_page2';
         $query = new Query();
         $client = new Client();
         $aliyunOSS = new AliyunOSS();
@@ -75,9 +75,9 @@ class GetBangumi extends Command
                     {
                         return !!$name;
                     });
-                    $alias = implode('|', $alias);
+                    $alias = count($alias) > 1 ? implode('|', $alias) : $alias[0];
                     $avatar = $body['images']['large'];
-                    $avatar = $aliyunOSS->fetch($avatar);
+                    $avatar = $aliyunOSS->fetch($avatar, 'bangumi');
                     $intro = trim($body['summary']);
                     $published_at = $this->formatPublish($body['air_date']);
                     $data = [
