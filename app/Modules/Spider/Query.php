@@ -136,19 +136,28 @@ class Query
                     $tips = $item->find('.tip_j')->count();
                     $talk = $item->find('.rr')->find('.na')->text();
                     $cv = $item->find('.actorBadge')->count();
+                    $badge = $item->find('.badge_job')->text();
+                    $id = last(explode('/', $item->find('a.avatar')->eq(0)->href));
                     if (!$cv)
                     {
                         return 0;
                     }
+
                     $talk = str_replace('+', '', $talk);
                     $talk = str_replace('(', '', $talk);
                     $talk = str_replace(')', '', $talk);
                     $talk = $talk ? intval($talk) : 0;
+                    if ($badge == '主角')
+                    {
+                        return $id;
+                    }
+
                     if ($tips < 2 && $talk < 10)
                     {
                         return 0;
                     }
-                    return last(explode('/', $item->find('a.avatar')->eq(0)->href));
+
+                    return $id;
                 })
                 ->all();
 
