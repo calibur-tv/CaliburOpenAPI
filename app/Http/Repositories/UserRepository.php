@@ -10,7 +10,7 @@ namespace App\Http\Repositories;
 
 
 use App\Http\Transformers\User\UserItemResource;
-use App\Services\Qiniu\Http\Client;
+use GuzzleHttp\Client;
 use App\Models\User;
 
 class UserRepository extends Repository
@@ -53,24 +53,22 @@ class UserRepository extends Repository
             $client = new Client();
             $appId = config('app.oauth2.weixin.client_id');
             $appSecret = config('app.oauth2.weixin.client_secret');
-            $resp = $client->get(
-                "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid={$appId}&secret={$appSecret}",
-                [
-                    'Accept' => 'application/json'
-                ]
-            );
+            $resp = $client->get("https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid={$appId}&secret={$appSecret}");
+            $code = $resp->getStatusCode();
+            if ($code !== 200)
+            {
+                return '';
+            }
 
             try
             {
-                $body = $resp->body;
-                $token = json_decode($body, true)['access_token'];
+                $body = json_decode($resp->getBody(), true);
+                return $body['access_token'];
             }
             catch (\Exception $e)
             {
-                $token = '';
+                return '';
             }
-
-            return $token;
         }, 'h');
     }
 
@@ -80,24 +78,22 @@ class UserRepository extends Repository
         {
             $client = new Client();
             $token = $this->getWechatAccessToken();
-            $resp = $client->get(
-                "https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token={$token}&type=jsapi",
-                [
-                    'Accept' => 'application/json'
-                ]
-            );
+            $resp = $client->get("https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token={$token}&type=jsapi");
+            $code = $resp->getStatusCode();
+            if ($code !== 200)
+            {
+                return '';
+            }
 
             try
             {
-                $body = $resp->body;
-                $ticket = json_decode($body, true)['ticket'];
+                $body = json_decode($resp->getBody(), true);
+                return $body['ticket'];
             }
             catch (\Exception $e)
             {
-                $ticket = '';
+                return '';
             }
-
-            return $ticket;
         }, 'h');
     }
 

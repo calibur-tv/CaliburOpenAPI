@@ -8,7 +8,7 @@
   },
   "scripts": {
       "dev": "sh ./bin/start",
-      "deploy": "npm run doctor && sh ./bin/deploy",
+      "deploy": "sh ./bin/deploy",
       "doctor": "./vendor/bin/phplint"
   },
   "repository": {

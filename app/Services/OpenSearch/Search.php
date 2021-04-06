@@ -29,10 +29,10 @@ class Search
 
     public function __construct()
     {
-        $this->accessKeyId = config('app.search.access');
-        $this->secret = config('app.search.secret');
-        $this->endPoint = config('app.search.endpoint');
-        $this->appName = config('app.search.name');
+        $this->accessKeyId = config('app.aliyun.search.access');
+        $this->secret = config('app.aliyun.search.secret');
+        $this->endPoint = config('app.aliyun.search.endpoint');
+        $this->appName = config('app.aliyun.search.name');
         $this->client = new OpenSearchClient($this->accessKeyId, $this->secret, $this->endPoint, $this->options);
         $this->search = new SearchClient($this->client);
         $this->params = new SearchParamsBuilder();
