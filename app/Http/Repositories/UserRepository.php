@@ -9,14 +9,9 @@
 namespace App\Http\Repositories;
 
 
-use App\Http\Modules\Counter\BangumiLikeCounter;
 use App\Http\Transformers\User\UserItemResource;
-use App\Models\Bangumi;
-use App\Models\IdolFans;
-use App\Models\Pin;
 use App\Services\Qiniu\Http\Client;
-use App\User;
-use Spatie\Permission\Models\Role;
+use App\Models\User;
 
 class UserRepository extends Repository
 {
@@ -27,18 +22,13 @@ class UserRepository extends Repository
             return null;
         }
 
-        $result = $this->RedisItem("user:{$slug}", function () use ($slug)
+        $id = slug2id($slug);
+
+        $result = $this->RedisItem("user:{$id}", function () use ($id)
         {
             $user = User
-                ::where('slug', $slug)
+                ::where('id', $id)
                 ->first();
-
-            if (is_null($user))
-            {
-                $user = User
-                    ::where('id', $slug)
-                    ->first();
-            }
 
             if (is_null($user))
             {
@@ -51,240 +41,6 @@ class UserRepository extends Repository
         if ($result === 'nil')
         {
             return null;
-        }
-
-        return $result;
-    }
-
-    public function followers($slug, $refresh = false, $seenIds = [], $count = 15)
-    {
-        // 动态有序要分页
-        $ids = $this->RedisSort($this->followers_cache_key($slug), function () use ($slug)
-        {
-            $user = User
-                ::where('slug', $slug)
-                ->first();
-
-            if (is_null($user))
-            {
-                return [];
-            }
-
-            return $user
-                ->followers()
-                ->orderBy('created_at', 'DESC')
-                ->pluck('created_at', 'slug')
-                ->toArray();
-
-        }, ['force' => $refresh, 'is_time' => true]);
-
-        return $this->filterIdsBySeenIds($ids, $seenIds, $count);
-    }
-
-    public function followings($slug, $refresh = false)
-    {
-        // 动态有序不分页
-        $ids = $this->RedisList($this->followings_cache_key($slug), function () use ($slug)
-        {
-            $user = User
-                ::where('slug', $slug)
-                ->first();
-
-            if (is_null($user))
-            {
-                return [];
-            }
-
-            return $user
-                ->followings()
-                ->orderBy('created_at', 'DESC')
-                ->pluck('slug')
-                ->toArray();
-        }, $refresh);
-
-        return [
-            'result' => $ids,
-            'total' => count($ids),
-            'no_more' => true
-        ];
-    }
-
-    public function friends($slug, $refresh = false)
-    {
-        // 动态有序不分页
-        $ids = $this->RedisList($this->friends_cache_key($slug), function () use ($slug)
-        {
-            $user = User
-                ::where('slug', $slug)
-                ->first();
-
-            if (is_null($user))
-            {
-                return [];
-            }
-
-            $userFollowers = $this->followers($slug, false, [], 99999999);
-            $userFollowings = $this->followings($slug, false);
-
-            return array_intersect($userFollowers['result'], $userFollowings['result']);
-        }, $refresh);
-
-        return [
-            'result' => $ids,
-            'total' => count($ids),
-            'no_more' => true
-        ];
-    }
-
-    public function timeline($slug, $refresh = false, $page = 0, $count = 10)
-    {
-        $list = $this->RedisSort("user-{$slug}-timeline", function () use ($slug)
-        {
-            $user = User
-                ::where('slug', $slug)
-                ->first();
-
-            if (is_null($user))
-            {
-                return [];
-            }
-
-            $list = $user
-                ->timeline()
-                ->select('event_type', 'event_slug', 'created_at')
-                ->orderBy('created_at', 'DESC')
-                ->orderBy('id', 'DESC')
-                ->get()
-                ->toArray();
-
-            $result = [];
-            foreach ($list as $row)
-            {
-                $result["{$row['event_type']}#{$row['event_slug']}"] = $row['created_at'];
-            }
-
-            return $result;
-        }, ['force' => $refresh, 'is_time' => true, 'with_score' => true]);
-
-        if ($refresh)
-        {
-            return [];
-        }
-
-        $idsObj = $this->filterIdsByPage($list, $page, $count, true);
-        $result = [];
-
-        foreach ($idsObj['result'] as $key => $val)
-        {
-            $event = explode('#', $key);
-            $result[] = [
-                'id' => $key,
-                'type' => $event[0],
-                'slug' => $event[1],
-                'created_at' => $val
-            ];
-        }
-
-        return [
-            'result' => $result,
-            'total' => $idsObj['total'],
-            'no_more' => $idsObj['no_more']
-        ];
-    }
-
-    public function idol_slugs($slug, $page, $take, $refresh = false)
-    {
-        $list = $this->RedisSort($this->userIdolsCacheKey($slug), function () use ($slug)
-        {
-            return IdolFans
-                ::where('user_slug', $slug)
-                ->orderBy('updated_at', 'DESC')
-                ->pluck('updated_at', 'idol_slug')
-                ->toArray();
-
-        }, ['force' => $refresh, 'is_time' => true]);
-
-        return $this->filterIdsByPage($list, $page, $take);
-    }
-
-    public function pins($slug, $page, $take, $refresh = false)
-    {
-        $list = $this->RedisSort($this->userPublishedPinCacheKey($slug), function () use ($slug)
-        {
-            return Pin
-                ::where('user_slug', $slug)
-                ->whereNotNull('published_at')
-                ->orderBy('published_at', 'DESC')
-                ->pluck('published_at', 'slug')
-                ->toArray();
-
-        }, ['force' => $refresh, 'is_time' => true]);
-
-        return $this->filterIdsByPage($list, $page, $take);
-    }
-
-    public function toggle_pin($userSlug, $pinSlug, $delete = false)
-    {
-        if ($delete) {
-            $this->SortRemove($this->userPublishedPinCacheKey($userSlug), $pinSlug);
-        } else {
-            $this->SortAdd($this->userPublishedPinCacheKey($userSlug), $pinSlug);
-        }
-    }
-
-    public function likeBangumi($slug, $refresh = false)
-    {
-        return $this->RedisSort($this->userLikeBanguiCacheKey($slug), function () use ($slug)
-        {
-            $user = User
-                ::where('slug', $slug)
-                ->first();
-
-            if (!$user)
-            {
-                return [];
-            }
-
-            $bangumiLikeCounter = new BangumiLikeCounter();
-            $data = $bangumiLikeCounter->list($user->id, true);
-
-            $ids = array_keys($data);
-            $slugs = Bangumi::whereIn('id', $ids)->pluck('slug', 'id')->toArray();
-            $result = [];
-            foreach ($slugs as $id => $slug)
-            {
-                $result[$slug] = $data[$id];
-            }
-
-            return $result;
-        }, ['force' => $refresh, 'is_time' => true]);
-    }
-
-    public function managers($refresh = false)
-    {
-        $cache = $this->RedisArray('school-managers', function ()
-        {
-            $roles = Role
-                ::pluck('name')
-                ->toArray();
-
-            $result = [];
-
-            foreach ($roles as $name)
-            {
-                $result[$name] = User
-                    ::role($name)
-                    ->pluck('slug')
-                    ->toArray();
-            }
-
-            return $result;
-        }, $refresh);
-
-        $result = [];
-        foreach ($cache as $key => $val)
-        {
-            $result[$key] = $this->list($val);
         }
 
         return $result;
@@ -358,35 +114,5 @@ class UserRepository extends Repository
             'nonceStr' => $noncestr,
             'signature' => $signature
         ];
-    }
-
-    public function followers_cache_key($slug)
-    {
-        return "user-followers:{$slug}";
-    }
-
-    public function followings_cache_key($slug)
-    {
-        return "user-followings:{$slug}";
-    }
-
-    public function friends_cache_key($slug)
-    {
-        return "user-friends:{$slug}";
-    }
-
-    public function userIdolsCacheKey($slug)
-    {
-        return "user-{$slug}-idol-slug";
-    }
-
-    public function userPublishedPinCacheKey($slug)
-    {
-        return "user-{$slug}-published-pin-slug";
-    }
-
-    public function userLikeBanguiCacheKey($slug)
-    {
-        return "user-{$slug}-like-bangumi-slug";
     }
 }

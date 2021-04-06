@@ -31,8 +31,8 @@ class GetCharacter extends Command
      */
     public function handle()
     {
-        $failedListKey = 'cron_character_failed_page5';
-        $lastIdKey = 'bgm_character_last_page5';
+        $failedListKey = 'cron_character_failed_page6';
+        $lastIdKey = 'bgm_character_last_page6';
         $lastId = Redis::GET($lastIdKey) ?: 1;
         $query = new Query();
         $aliyunOSS = new AliyunOSS();
@@ -41,6 +41,8 @@ class GetCharacter extends Command
             $bangumi = Bangumi::where('id', $lastId)->first();
             if (!$bangumi)
             {
+                Redis::RPUSH($failedListKey, $lastId);
+                Redis::SET($lastIdKey, intval($lastId) + 1);
                 return true;
             }
 

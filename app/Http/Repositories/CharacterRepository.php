@@ -1,13 +1,18 @@
 <?php
-
+/**
+ * Created by PhpStorm.
+ * User: yuistack
+ * Date: 2019-04-15
+ * Time: 08:31
+ */
 
 namespace App\Http\Repositories;
 
 
-use App\Http\Transformers\Bangumi\BangumiItemResource;
-use App\Models\Bangumi;
+use App\Http\Transformers\User\UserItemResource;
+use App\Models\Character;
 
-class BangumiRepository extends Repository
+class CharacterRepository extends Repository
 {
     public function item($slug, $refresh = false)
     {
@@ -18,18 +23,18 @@ class BangumiRepository extends Repository
 
         $id = slug2id($slug);
 
-        $result = $this->RedisItem("bangumi:{$id}", function () use ($id)
+        $result = $this->RedisItem("character:{$id}", function () use ($id)
         {
-            $bangumi = Bangumi
+            $character = Character
                 ::where('id', $id)
                 ->first();
 
-            if (is_null($bangumi))
+            if (is_null($character))
             {
                 return 'nil';
             }
 
-            return new BangumiItemResource($bangumi);
+            return new UserItemResource($character);
         }, $refresh);
 
         if ($result === 'nil')

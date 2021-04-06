@@ -16,12 +16,20 @@ if ( ! function_exists('config_path'))
 
 function slug2id($slug)
 {
+    if (is_numeric($slug))
+    {
+        return $slug;
+    }
     $slug = str_replace('cc-', '', $slug);
     return floor(base_convert($slug, 36, 10) / 1000);
 }
 
 function id2slug($id)
 {
+    if (is_string($id))
+    {
+        return $id;
+    }
     return base_convert(($id * 1000 + rand(0, 999)), 10, 36);
 }
 

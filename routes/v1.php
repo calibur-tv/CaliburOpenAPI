@@ -55,6 +55,11 @@ $router->group(['prefix' => 'sign'], function () use ($router)
     });
 });
 
+$router->group(['prefix' => 'search'], function () use ($router)
+{
+    $router->get('mixin', 'SearchController@mixin');
+});
+
 $router->group(['prefix' => 'desk', 'middleware' => 'auth'], function () use ($router)
 {
     $router->get('upload_token', 'DeskController@token');
