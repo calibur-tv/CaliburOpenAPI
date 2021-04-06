@@ -6,11 +6,11 @@
  * Time: 08:53
  */
 
-namespace App\Http\Transformers\Bangumi;
+namespace App\Http\Transformers\Character;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class BangumiItemResource extends JsonResource
+class CharacterItemResource extends JsonResource
 {
     public function toArray($request)
     {

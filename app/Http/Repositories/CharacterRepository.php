@@ -9,7 +9,7 @@
 namespace App\Http\Repositories;
 
 
-use App\Http\Transformers\User\UserItemResource;
+use App\Http\Transformers\Character\CharacterItemResource;
 use App\Models\Character;
 
 class CharacterRepository extends Repository
@@ -34,7 +34,7 @@ class CharacterRepository extends Repository
                 return 'nil';
             }
 
-            return new UserItemResource($character);
+            return new CharacterItemResource($character);
         }, $refresh);
 
         if ($result === 'nil')

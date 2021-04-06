@@ -43,7 +43,7 @@ function trimImage($url)
     return count($arr) === 1 ? $url : explode('calibur.tv/', $url)[1];
 }
 
-function patchImage($url, $default = '')
+function patchImage($url, $default = 'default-poster')
 {
     if (!$url)
     {

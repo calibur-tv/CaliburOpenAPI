@@ -35,4 +35,9 @@ class Bangumi extends Model
 
         return $bangumi;
     }
+
+    public function getAvatarAttribute($avatar)
+    {
+        return patchImage($avatar);
+    }
 }

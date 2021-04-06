@@ -118,7 +118,7 @@ return [
     ],
 
     'image-cdn' => [
-        'https://m1.calibur.tv/'
+        'https://web.calibur.tv/'
     ],
 
     'geetest' => [

@@ -32,4 +32,9 @@ class Character extends Model
 
         return $character;
     }
+
+    public function getAvatarAttribute($avatar)
+    {
+        return patchImage($avatar);
+    }
 }

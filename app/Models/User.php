@@ -64,6 +64,11 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
         $this->attributes['password'] = Crypt::encrypt($str);
     }
 
+    public function getAvatarAttribute($avatar)
+    {
+        return patchImage($avatar);
+    }
+
     public function createApiToken()
     {
         $token = Crypt::encrypt($this->slug . time());
