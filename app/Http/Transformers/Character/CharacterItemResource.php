@@ -16,7 +16,7 @@ class CharacterItemResource extends JsonResource
     {
         return [
             'slug' => $this->slug,
-            'name' => $this->title,
+            'name' => $this->name,
             'alias' => explode('|', $this->alias),
             'intro' => mb_substr($this->intro, 0, 30, 'utf-8'),
             'avatar' => $this->avatar
