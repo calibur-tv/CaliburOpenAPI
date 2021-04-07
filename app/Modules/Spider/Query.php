@@ -166,7 +166,7 @@ class Query
                 return !!$item;
             });
 
-//            $ids = array_slice($ids, 0, 50);
+            $ids = array_slice($ids, 0, 30);
 
             $result = [];
             foreach ($ids as $id)
@@ -305,11 +305,6 @@ class Query
             $extra['alias'] = array_unique($extra['alias']);
             $alias = array_values($extra['alias']);
             $alias = count($alias) > 1 ? implode('|', $alias) : $alias[0];
-
-            if (!$detail)
-            {
-                return null;
-            }
 
             return [
                 'bgm_id' => $id,
