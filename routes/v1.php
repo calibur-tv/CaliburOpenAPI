@@ -60,6 +60,11 @@ $router->group(['prefix' => 'search'], function () use ($router)
     $router->get('mixin', 'SearchController@mixin');
 });
 
+$router->group(['prefix' => 'bangumi'], function () use ($router)
+{
+    $router->get('all', 'BangumiController@all');
+});
+
 $router->group(['prefix' => 'desk', 'middleware' => 'auth'], function () use ($router)
 {
     $router->get('upload_token', 'DeskController@token');
