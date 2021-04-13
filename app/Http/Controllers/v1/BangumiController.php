@@ -13,10 +13,10 @@ class BangumiController extends Controller
     {
         $repository = new Repository();
 
-        $result = $repository->RedisItem('bangumi-all-search', function ()
+        $result = $repository->RedisItem('bangumi-all-search-v2', function ()
         {
             return Bangumi
-                ::select('slug', 'alias')
+                ::select('slug', 'alias', 'title AS text')
                 ->get();
         });
 

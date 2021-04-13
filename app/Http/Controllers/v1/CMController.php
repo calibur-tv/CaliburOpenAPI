@@ -8,9 +8,32 @@ use App\Models\CMBanner;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redis;
 
-class CmController extends Controller
+class CMController extends Controller
 {
     protected $bannerCacheKey = 'homepage_banners';
+
+    public function imageLooper()
+    {
+        $result = [
+            'https://web.calibur.tv/banner/1.jpg',
+            'https://web.calibur.tv/banner/2.png',
+            'https://web.calibur.tv/banner/3.jpg',
+            'https://web.calibur.tv/banner/4.jpg',
+            'https://web.calibur.tv/banner/5.jpg',
+            'https://web.calibur.tv/banner/6.jpg',
+            'https://web.calibur.tv/banner/7.jpg',
+            'https://web.calibur.tv/banner/8.jpg',
+            'https://web.calibur.tv/banner/9.jpg',
+        ];
+
+        shuffle($result);
+
+        return $this->resOK([
+            'result' => $result,
+            'total' => count($result),
+            'no_more' => true
+        ]);
+    }
 
     public function showBanners(Request $request)
     {

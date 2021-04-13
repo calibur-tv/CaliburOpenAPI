@@ -92,22 +92,24 @@ $router->group(['prefix' => 'desk', 'middleware' => 'auth'], function () use ($r
 
 $router->group(['prefix' => 'cm'], function () use ($router)
 {
-    $router->get('index_banner', 'CmController@showBanners');
+    $router->get('image_looper', 'CMController@imageLooper');
 
-    $router->post('report_banner', 'CmController@reportBannerStat');
+    $router->get('index_banner', 'CMController@showBanners');
+
+    $router->post('report_banner', 'CMController@reportBannerStat');
 });
 
 $router->group(['prefix' => 'console', 'middleware' => 'auth'], function () use ($router)
 {
     $router->group(['prefix' => 'cm'], function () use ($router)
     {
-        $router->get('show_all_banner', 'CmController@allBanners');
+        $router->get('show_all_banner', 'CMController@allBanners');
 
-        $router->post('create_banner', 'CmController@createBanner');
+        $router->post('create_banner', 'CMController@createBanner');
 
-        $router->post('update_banner', 'CmController@updateBanner');
+        $router->post('update_banner', 'CMController@updateBanner');
 
-        $router->post('toggle_banner', 'CmController@toggleBanner');
+        $router->post('toggle_banner', 'CMController@toggleBanner');
     });
 
     $router->group(['prefix' => 'role'], function () use ($router)
