@@ -43,11 +43,11 @@ function trimImage($url)
     return count($arr) === 1 ? $url : explode('calibur.tv/', $url)[1];
 }
 
-function patchImage($url, $default = 'default-poster')
+function patchImage($url, $default = 'owner/avatar.jpg')
 {
     if (!$url)
     {
-        return $default;
+        $url = $default;
     }
 
     if (preg_match('/^http/', $url))
@@ -55,7 +55,7 @@ function patchImage($url, $default = 'default-poster')
         return $url;
     }
 
-    return config('app.image-cdn')[array_rand(config('app.image-cdn'))]. ($url ?: $default);
+    return config('app.image-cdn')[array_rand(config('app.image-cdn'))]. $url;
 }
 
 function str_rand($length = 8, $char = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ')
