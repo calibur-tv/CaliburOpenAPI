@@ -58,11 +58,13 @@ $router->group(['prefix' => 'sign'], function () use ($router)
 $router->group(['prefix' => 'search'], function () use ($router)
 {
     $router->get('mixin', 'SearchController@mixin');
+
+    $router->get('bangumi', 'SearchController@bangumi');
 });
 
 $router->group(['prefix' => 'bangumi'], function () use ($router)
 {
-    $router->get('all', 'BangumiController@all');
+
 });
 
 $router->group(['prefix' => 'desk', 'middleware' => 'auth'], function () use ($router)
