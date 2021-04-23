@@ -28,7 +28,7 @@ Resources:
           Type: Timer
           Properties:
             CronExpression: '0 */1 * * * *'
-            Enable: true
+            Enable: false
 
     lumen-server:
       Type: 'Aliyun::Serverless::Function'

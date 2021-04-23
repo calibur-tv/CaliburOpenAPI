@@ -10,6 +10,7 @@ namespace App\Http\Controllers\web;
 
 use App\Http\Controllers\Controller;
 use App\Models\Desk;
+use App\Models\File;
 use App\Services\Socialite\SocialiteManager;
 use App\Models\User;
 use GuzzleHttp\Client;
@@ -337,6 +338,7 @@ class CallbackController extends Controller
         $arr = explode('/', $path);
         $prefix = $arr[0];
         $userId = str_replace('user-', '', $prefix);
+        $name = $arr[1];
         $meta = $request->all();
         $hash =$request->get('hash');
         $user = User::where('id', $userId)->first();
@@ -345,25 +347,23 @@ class CallbackController extends Controller
             return $this->resErrBad();
         }
 
+        $file = File::where('hash', $hash)->first();
+        if (!$file)
+        {
+            $file = File::create([
+                'hash' => $hash,
+                'meta' => $meta
+            ]);
+        }
+
         if (User::spaceIsExceed($user, $meta['size']))
         {
             return $this->resErrRole();
         }
 
-        $desk = Desk
-            ::where('hash', $hash)
-            ->where('user_id', $userId)
-            ->first();
-
-        if ($desk)
-        {
-            return $this->resOK($desk);
-        }
-
         $desk = Desk::create([
-            'name' => $arr[1],
-            'hash' => $hash,
-            'meta' => $meta,
+            'name' => $name,
+            'file_id' => $file->id,
             'user_id' => $userId
         ]);
 

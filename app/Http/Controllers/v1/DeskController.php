@@ -6,7 +6,9 @@ namespace App\Http\Controllers\v1;
 
 use App\Http\Controllers\Controller;
 use App\Models\Desk;
+use App\Models\File;
 use App\Models\Folder;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class DeskController extends Controller
@@ -71,6 +73,35 @@ class DeskController extends Controller
         $response['dir'] = $dir;
 
         return $this->resOK($response);
+    }
+
+    public function preload(Request $request)
+    {
+        $user = $request->user();
+        $hash = $request->get('hash');
+        $name = $request->get('name');
+        $size = $request->get('size');
+        $folderId = $request->get('folder_id');
+
+        $file = File
+            ::where('hash', $hash)
+            ->first();
+
+        if (!$file)
+        {
+            return $this->resOK(null);
+        }
+
+        $desk = Desk::create([
+            'name' => $name,
+            'file_id' => $file->id,
+            'user_id' => $user->id,
+            'folder_id' => $folderId
+        ]);
+
+        User::spaceUsageAdd($user, $size);
+
+        return $this->resOK($desk);
     }
 
     public function folders(Request $request)

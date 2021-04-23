@@ -13,21 +13,13 @@ class Desk extends Model
 
     protected $fillable = [
         'name',
-        'hash',
-        'meta',
+        'file_id',
         'user_id',
         'folder_id'
     ];
 
-    public function setMetaAttribute($meta)
+    public function file()
     {
-        $this->attributes['meta'] = json_encode($meta);
-    }
-
-    public function getMetaAttribute($meta)
-    {
-        $result = json_decode($meta);
-        $result->url = 'https://web.calibur.tv/' . $result->filename;
-        return $result;
+        return $this->hasOne('App\Models\File', 'id', 'file_id');
     }
 }

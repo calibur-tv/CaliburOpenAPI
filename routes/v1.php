@@ -71,6 +71,8 @@ $router->group(['prefix' => 'desk', 'middleware' => 'auth'], function () use ($r
 {
     $router->get('upload_token', 'DeskController@token');
 
+    $router->post('preload', 'DeskController@preload');
+
     $router->group(['prefix' => 'folder'], function () use ($router)
     {
         $router->get('list', 'DeskController@folders');
