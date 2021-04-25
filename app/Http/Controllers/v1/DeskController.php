@@ -5,6 +5,7 @@ namespace App\Http\Controllers\v1;
 
 
 use App\Http\Controllers\Controller;
+use App\Http\Transformers\Desk\DeskItemResource;
 use App\Models\Desk;
 use App\Models\File;
 use App\Models\Folder;
@@ -79,12 +80,13 @@ class DeskController extends Controller
     {
         $user = $request->user();
         $hash = $request->get('hash');
-        $name = $request->get('name');
         $size = $request->get('size');
-        $folderId = $request->get('folder_id');
+        $split = explode('-', $request->get('name'));
+        $folderId = $split[0];
+        $name = $split[1];
 
         $file = File
-            ::where('hash', $hash)
+            ::where('hash', strtoupper($hash))
             ->first();
 
         if (!$file)
@@ -94,6 +96,8 @@ class DeskController extends Controller
 
         $desk = Desk::create([
             'name' => $name,
+            'hash' => $file->hash,
+            'meta' => $file->meta,
             'file_id' => $file->id,
             'user_id' => $user->id,
             'folder_id' => $folderId
@@ -101,7 +105,7 @@ class DeskController extends Controller
 
         User::spaceUsageAdd($user, $size);
 
-        return $this->resOK($desk);
+        return $this->resOK(new DeskItemResource($desk));
     }
 
     public function folders(Request $request)
@@ -133,12 +137,11 @@ class DeskController extends Controller
         $files = Desk
             ::where('user_id', $user->id)
             ->where('folder_id', $folder_id)
-            ->get()
-            ->toArray();
+            ->get();
 
         return $this->resOK([
             'total' => count($files),
-            'result' => $files,
+            'result' => DeskItemResource::collection($files),
             'no_more' => true
         ]);
     }

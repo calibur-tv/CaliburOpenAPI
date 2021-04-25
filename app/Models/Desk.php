@@ -13,6 +13,8 @@ class Desk extends Model
 
     protected $fillable = [
         'name',
+        'hash',
+        'meta',
         'file_id',
         'user_id',
         'folder_id'
@@ -21,5 +23,15 @@ class Desk extends Model
     public function file()
     {
         return $this->hasOne('App\Models\File', 'id', 'file_id');
+    }
+
+    public function setMetaAttribute($meta)
+    {
+        $this->attributes['meta'] = json_encode($meta);
+    }
+
+    public function getMetaAttribute($meta)
+    {
+        return json_decode($meta);
     }
 }

@@ -9,6 +9,7 @@
 namespace App\Http\Controllers\web;
 
 use App\Http\Controllers\Controller;
+use App\Http\Transformers\Desk\DeskItemResource;
 use App\Models\Desk;
 use App\Models\File;
 use App\Services\Socialite\SocialiteManager;
@@ -334,14 +335,21 @@ class CallbackController extends Controller
             return $this->resErrRole();
         }
 
+        $meta = $request->except(['hash', 'filename']);
         $path = $request->get('filename');
+        $hash =$request->get('hash');
+
         $arr = explode('/', $path);
         $prefix = $arr[0];
         $userId = str_replace('user-', '', $prefix);
-        $name = $arr[1];
-        $meta = $request->all();
-        $hash =$request->get('hash');
-        $user = User::where('id', $userId)->first();
+        $split = explode('-', $arr[1]);
+        $folderId = $split[0];
+        $name = $split[1];
+
+        $user = User
+            ::where('id', $userId)
+            ->first();
+
         if (is_null($user))
         {
             return $this->resErrBad();
@@ -363,13 +371,16 @@ class CallbackController extends Controller
 
         $desk = Desk::create([
             'name' => $name,
+            'hash' => $hash,
+            'meta' => $meta,
             'file_id' => $file->id,
-            'user_id' => $userId
+            'user_id' => $userId,
+            'folder_id' => $folderId
         ]);
 
         User::spaceUsageAdd($user, $meta['size']);
 
-        return $this->resOK($desk);
+        return $this->resOK(new DeskItemResource($desk));
     }
 
     private function accessIsNew($method, $access)

@@ -23,8 +23,6 @@ class File extends Model
 
     public function getMetaAttribute($meta)
     {
-        $result = json_decode($meta);
-        $result->url = 'https://web.calibur.tv/' . $result->filename;
-        return $result;
+        return json_decode($meta);
     }
 }
