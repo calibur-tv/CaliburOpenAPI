@@ -335,7 +335,7 @@ class CallbackController extends Controller
             return $this->resErrRole();
         }
 
-        $meta = $request->except(['hash', 'filename']);
+        $meta = $request->except(['hash']);
         $path = $request->get('filename');
         $hash =$request->get('hash');
 

@@ -228,7 +228,7 @@ class DeskController extends Controller
             'folder_id' => $folderId ?? $file->folder_id
         ]);
 
-        return $this->resOK($file);
+        return $this->resOK(new DeskItemResource($file));
     }
 
     public function deleteFile(Request $request)
