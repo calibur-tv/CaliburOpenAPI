@@ -18,7 +18,7 @@ class DeskItemResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'meta' => $this->meta,
-            'link' => patchImage($this->filename),
+            'link' => patchImage($this->meta->filename),
             'created_at' => $this->created_at
         ];
     }
