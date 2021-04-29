@@ -78,7 +78,14 @@ class Search
                 return $item['uuid'];
             }, $list);
             $repository = $this->getRepositoryByType($typeId);
-            $result = $repository->list($slug);
+            $list = $repository->list($slug);
+            foreach ($list as $item)
+            {
+                $result[] = [
+                    'type' => $typeStr,
+                    'data' => $item
+                ];
+            }
         }
         else
         {
