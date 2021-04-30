@@ -16,6 +16,8 @@ $router->group(['prefix' => 'sign'], function () use ($router)
 
     $router->group(['middleware' => 'auth'], function () use ($router)
     {
+        $router->get('get_user_info', 'SignController@getUserInfo');
+
         $router->post('get_user_info', 'SignController@getUserInfo');
 
         $router->post('logout', 'SignController@logout');
