@@ -70,6 +70,8 @@ $app->configure('cors');
 
 $app->configure('database');
 
+$app->configure('mail');
+
 $app->configure('sentry');
 
 $app->configure('permission');
@@ -99,7 +101,14 @@ $app->routeMiddleware([
     'role' => Spatie\Permission\Middlewares\RoleMiddleware::class,
 ]);
 
-$app->alias('cache', \Illuminate\Cache\CacheManager::class);
+
+$app->alias('cache', Illuminate\Cache\CacheManager::class);
+$app->alias('mail.manager', Illuminate\Mail\MailManager::class);
+$app->alias('mail.manager', Illuminate\Contracts\Mail\Factory::class);
+$app->alias('mailer', Illuminate\Mail\Mailer::class);
+$app->alias('mailer', Illuminate\Contracts\Mail\Mailer::class);
+$app->alias('mailer', Illuminate\Contracts\Mail\MailQueue::class);
+
 /*
 |--------------------------------------------------------------------------
 | Register Service Providers
@@ -119,6 +128,7 @@ $app->register(Mews\Purifier\PurifierServiceProvider::class);
 $app->register(Fruitcake\Cors\CorsServiceProvider::class);
 $app->register(Hhxsv5\LaravelS\Illuminate\LaravelSServiceProvider::class);
 $app->register(Illuminate\Redis\RedisServiceProvider::class);
+$app->register(Illuminate\Mail\MailServiceProvider::class);
 $app->register(Sentry\Laravel\ServiceProvider::class);
 
 /*
