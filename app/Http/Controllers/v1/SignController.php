@@ -31,7 +31,7 @@ class SignController extends Controller
      *
      * > 目前返回的数字验证码是`6位`
      *
-     * @Post("/door/message")
+     * @Post("/sign/message")
      *
      * @Parameters({
      *      @Parameter("type", description="上面的某种type", type="string", required=true),
@@ -173,7 +173,7 @@ class SignController extends Controller
      *
      * 目前仅支持使用手机号注册
      *
-     * @Post("/door/register")
+     * @Post("/sign/register")
      *
      * @Parameters({
      *      @Parameter("access", description="手机号", type="number", required=true),
@@ -247,7 +247,7 @@ class SignController extends Controller
      *
      * 目前仅支持手机号和密码登录
      *
-     * @Post("/door/login")
+     * @Post("/sign/login")
      *
      * @Parameters({
      *      @Parameter("access", description="手机号", type="number", required=true),
@@ -330,7 +330,7 @@ class SignController extends Controller
     /**
      * 用户登出
      *
-     * @Post("/door/logout")
+     * @Post("/sign/logout")
      *
      * @Request(headers={"Authorization": "Bearer JWT-Token"}),
      * @Response(204)
@@ -343,7 +343,7 @@ class SignController extends Controller
     /**
      * APP授权QQ登录、注册
      *
-     * @Post("/door/oauth2/qq")
+     * @Post("/sign/oauth2/qq")
      *
      * @Parameters({
      *      @Parameter("from", description="如果是登录，就是 sign，如果是绑定，就是 bind", type="string", required=true),
@@ -447,7 +447,7 @@ class SignController extends Controller
     /**
      * APP授权微信登录、注册
      *
-     * @Post("/door/oauth2/wechat")
+     * @Post("/sign/oauth2/wechat")
      *
      * @Parameters({
      *      @Parameter("from", description="如果是登录，就是 sign，如果是绑定，就是 bind", type="string", required=true),
@@ -553,7 +553,7 @@ class SignController extends Controller
     /**
      * 绑定用户手机号
      *
-     * @Post("/door/bind_phone")
+     * @Post("/sign/bind_phone")
      *
      * @Parameters({
      *      @Parameter("phone", description="手机号", type="number", required=true),
@@ -633,7 +633,7 @@ class SignController extends Controller
                 'Accept' => 'application/json'
             ]
         );
-        $body = $resp->getBody();
+        $body = json_decode($resp->getBody(), true);
 
         if (!isset($body['session_key']))
         {
@@ -687,7 +687,7 @@ class SignController extends Controller
                 'Accept' => 'application/json'
             ]
         );
-        $body = $resp->getBody();
+        $body = json_decode($resp->getBody(), true);
 
         if (!isset($body['session_key']))
         {
@@ -741,7 +741,7 @@ class SignController extends Controller
                 'Accept' => 'application/json'
             ]
         );
-        $body = $resp->getBody();
+        $body = json_decode($resp->getBody(), true);
 
         if (!isset($body['session_key']))
         {
@@ -862,7 +862,7 @@ class SignController extends Controller
                 'Accept' => 'application/json'
             ]
         );
-        $body = $resp->getBody();
+        $body = json_decode($resp->getBody(), true);
         $uniqueId = $body['unionid'] ?? '';
         if (!isset($body['session_key']))
         {
@@ -969,7 +969,7 @@ class SignController extends Controller
                 'Accept' => 'application/json'
             ]
         );
-        $body = $resp->getBody();
+        $body = json_decode($resp->getBody(), true);
         $uniqueId = $body['unionid'] ?? '';
         if (!isset($body['session_key']))
         {
@@ -1005,7 +1005,7 @@ class SignController extends Controller
     /**
      * 重置密码
      *
-     * @Post("/door/reset")
+     * @Post("/sign/reset")
      *
      * @Parameters({
      *      @Parameter("access", description="手机号", type="number", required=true),

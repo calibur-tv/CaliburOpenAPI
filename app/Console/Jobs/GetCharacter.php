@@ -64,7 +64,6 @@ class GetCharacter extends Command
                 }
 
                 $character['avatar'] = $aliyunOSS->fetch($character['avatar'], 'character');
-                $character['migration_state'] = 3;
 
                 Character::createCharacter($character);
             }

@@ -86,8 +86,7 @@ class GetBangumi extends Command
                         'intro' => $intro,
                         'avatar' => $avatar,
                         'bgm_id' => $bgm_id,
-                        'published_at' => $published_at,
-                        'migration_state' => 3
+                        'published_at' => $published_at
                     ];
 
                     Bangumi::createBangumi($data);

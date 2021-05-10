@@ -16,8 +16,7 @@ class Bangumi extends Model
         'bgm_id',
         'bili_id',
         'update_week', // 0：不更新，1 ~ 7：星期一 ~ 星期日
-        'published_at',
-        'migration_state'
+        'published_at'
     ];
 
     public static function createBangumi($data)

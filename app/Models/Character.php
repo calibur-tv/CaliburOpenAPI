@@ -13,8 +13,7 @@ class Character extends Model
         'alias',
         'intro',
         'avatar',
-        'bgm_id',
-        'migration_state'
+        'bgm_id'
     ];
 
     public static function createCharacter($data)
