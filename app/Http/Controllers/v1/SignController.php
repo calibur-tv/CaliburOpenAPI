@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Repositories\UserRepository;
 use App\Http\Transformers\User\UserAuthResource;
 use App\Services\Geetest\Captcha;
+use App\Services\Sms\Email;
 use App\Services\Sms\Message;
 use App\Modules\WXBizDataCrypt;
 use App\Services\Socialite\AccessToken;
@@ -138,6 +139,99 @@ class SignController extends Controller
         }
 
         return $this->resOK('短信已发送');
+    }
+
+    public function sendEmail(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'type' => [
+                'required',
+                Rule::in(['sign_up', 'forgot_password', 'bind_email', 'sign_in']),
+            ],
+            'email_address' => 'required|email'
+        ]);
+
+        if ($validator->fails())
+        {
+            return $this->resErrParams($validator);
+        }
+
+        $mail = $request->get('email_address');
+        $type = $request->get('type');
+
+        if ($this->checkMessageThrottle($mail))
+        {
+            return $this->resErrThrottle('一分钟内只能发送一次');
+        }
+
+        if ($type === 'sign_up')
+        {
+            $mustNew = false;
+            $mustOld = false;
+        }
+        else if ($type === 'sign_in')
+        {
+            $mustNew = false;
+            $mustOld = true;
+        }
+        else if ($type === 'forgot_password')
+        {
+            $mustNew = false;
+            $mustOld = true;
+        }
+        else if ($type === 'bind_email')
+        {
+            $mustNew = true;
+            $mustOld = false;
+        }
+        else
+        {
+            $mustNew = false;
+            $mustOld = false;
+        }
+
+        if ($mustNew && !$this->accessIsNew('email', $mail))
+        {
+            return $this->resErrBad('邮箱已注册');
+        }
+
+        if ($mustOld && $this->accessIsNew('email', $mail))
+        {
+            return $this->resErrBad('未注册的邮箱');
+        }
+
+        $authCode = $this->createMessageAuthCode($mail, $type);
+        $sms = new Email();
+
+        if ($type === 'sign_up')
+        {
+            $error = $sms->register($mail, $authCode);
+        }
+        else if ($type === 'sign_in')
+        {
+            $error = $sms->login($mail, $authCode);
+        }
+        else if ($type === 'forgot_password')
+        {
+            $error = $sms->forgotPassword($mail, $authCode);
+        }
+        else if ($type === 'bind_email')
+        {
+            $error = $sms->bindEmail($mail, $authCode);
+        }
+        else
+        {
+            return $this->resErrBad();
+        }
+
+        if ($error)
+        {
+            $this->checkMessageAuthCode($mail, $type, $authCode);
+            $this->checkMessageThrottle($mail, true);
+            return $this->resErrServiceUnavailable($error->getMessage());
+        }
+
+        return $this->resOK('邮件已发送');
     }
 
     public function detectAccess(Request $request)
@@ -1128,7 +1222,7 @@ class SignController extends Controller
 
     private function checkMessageThrottle($phone, $isDelete = false)
     {
-        $cacheKey = 'phone_message_throttle:' . $phone;
+        $cacheKey = 'validate_message_throttle:' . $phone;
         if ($isDelete)
         {
             Redis::DEL($cacheKey);

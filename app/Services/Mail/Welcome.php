@@ -6,16 +6,14 @@ use Illuminate\Mail\Mailable;
 
 class Welcome extends Mailable
 {
-    public $name;
     public $token;
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct($name, $token)
+    public function __construct($token)
     {
-        $this->name = $name;
         $this->token = $token;
     }
 
@@ -27,10 +25,8 @@ class Welcome extends Mailable
     public function build()
     {
         return $this
-            ->view('emails.welcome')
-            ->subject('欢迎加入 - calibur.tv')
+            ->text('emails.welcome')
             ->with([
-                'name' => $this->name,
                 'token' => $this->token
             ]);
     }

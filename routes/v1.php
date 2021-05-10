@@ -8,6 +8,8 @@ $router->group(['prefix' => 'sign'], function () use ($router)
 
     $router->post('message', 'SignController@sendMessage');
 
+    $router->post('email', 'SignController@sendEmail');
+
     $router->post('register', 'SignController@register');
 
     $router->post('login', 'SignController@login');

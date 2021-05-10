@@ -14,13 +14,6 @@
 
 $router->get('/', function () use ($router)
 {
-    try {
-        \Illuminate\Support\Facades\Mail::to([
-            'email' => '414927352@qq.com'
-        ])->send(new \App\Services\Mail\Welcome('2333', '666'));
-    } catch (\Exception $e) {
-        dd($e);
-    }
     return 'hello guys~';
 });
 
