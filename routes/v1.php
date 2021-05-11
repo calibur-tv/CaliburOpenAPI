@@ -14,6 +14,8 @@ $router->group(['prefix' => 'sign'], function () use ($router)
 
     $router->post('login', 'SignController@login');
 
+    $router->post('login_wechat', 'SignController@wechatMiniAppSign');
+
     $router->get('captcha', 'SignController@captcha');
 
     $router->group(['middleware' => 'auth'], function () use ($router)
@@ -30,20 +32,8 @@ $router->group(['prefix' => 'sign'], function () use ($router)
 
         $router->post('bind_email', 'SignController@bindEmail');
 
-        $router->post('bind_weapp_user', 'SignController@bindWechatUser');
-
         $router->post('bind_qq_user', 'SignController@bindQQUser');
     });
-
-    $router->post('get_wechat_phone', 'SignController@getWechatPhone');
-
-    $router->post('wechat_mini_app_login', 'SignController@wechatMiniAppLogin');
-
-    $router->post('wechat_mini_app_get_token', 'SignController@wechatMiniAppToken');
-
-    $router->post('weapp_mini_app_login', 'SignController@wechatMiniAppLogin');
-
-    $router->post('weapp_mini_app_get_token', 'SignController@wechatMiniAppToken');
 
     $router->post('qq_mini_app_login', 'SignController@qqMiniAppLogin');
 

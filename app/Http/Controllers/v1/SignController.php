@@ -857,7 +857,7 @@ class SignController extends Controller
         return $this->resOK();
     }
 
-    public function getWechatPhone(Request $request)
+    public function wechatMiniAppSign(Request $request)
     {
         $appName = $request->get('app_name');
         if (!in_array($appName, array_keys(config("app.oauth2.wechat_mini_app"))))
@@ -901,135 +901,29 @@ class SignController extends Controller
             return $this->resErrServiceUnavailable('获取手机号失败');
         }
 
-        $type = $request->get('type');
-        $user = $request->user();
-
-        if ($type === 'bind_phone' && $user)
+        if ($this->accessIsNew('phone', $phone))
         {
-            if (!$this->accessIsNew('phone', $phone))
-            {
-                return $this->resErrBad('该手机号已绑定另外一个账号');
-            }
-
-            $user->update([
+            $user = User::createUser([
+                'password' => $body['session_key'],
                 'phone' => $phone
             ]);
-
-            return $this->resOK();
-        }
-
-        $messageCode = $this->createMessageAuthCode($phone, $type);
-
-        return $this->resOK([
-            'phone_number' => $phone,
-            'message_code' => $messageCode
-        ]);
-    }
-
-    // 微信小程序注册用户或获取当前用户的 token
-    public function wechatMiniAppLogin(Request $request)
-    {
-        $appName = $request->get('app_name');
-        if (!in_array($appName, array_keys(config("app.oauth2.wechat_mini_app"))))
-        {
-            return $this->resErrBad();
-        }
-
-        $iv = $request->get('iv');
-        $user = $request->get('user');
-        $sessionKey = $request->get('session_key');
-        $encryptedData = $request->get('encrypted_data');
-
-        $appId = config("app.oauth2.wechat_mini_app.{$appName}.client_id");
-
-        $tool = new WXBizDataCrypt($appId, $sessionKey);
-        $code = $tool->decryptData($encryptedData, $iv, $data);
-
-        if ($code)
-        {
-            return $this->resErrServiceUnavailable('微信服务异常：' . $code);
-        }
-
-        $data = json_decode($data, true);
-        $uniqueId = $data['unionId'];
-        $isNewUser = $this->accessIsNew('wechat_unique_id', $uniqueId);
-        if ($isNewUser)
-        {
-            // signUp
-            $data = [
-                'nickname' => $user['nickName'],
-                'wechat_open_id' => $data['openId'],
-                'wechat_unique_id' => $uniqueId,
-                'password' => str_rand()
-            ];
-
-            $user = User::createUser($data);
         }
         else
         {
             $user = User
-                ::where('wechat_unique_id', $uniqueId)
+                ::where('phone', $phone)
                 ->first();
+        }
 
-            if (is_null($user))
-            {
-                return $this->resErrNotFound('这个用户已经消失了');
-            }
+        if ($this->accessIsNew('wechat_unique_id', $body['unionid']))
+        {
+            $user->update([
+                'wechat_unique_id' => $body['unionid'],
+                'wechat_open_id' => $body['openid']
+            ]);
         }
 
         return $this->resOK($user->api_token);
-    }
-
-    // 微信小程序获取用户的 session_key 或获取当前用户的 token
-    public function wechatMiniAppToken(Request $request)
-    {
-        $code = $request->get('code');
-        $appName = $request->get('app_name');
-        if (!$code || !in_array($appName, array_keys(config("app.oauth2.wechat_mini_app"))))
-        {
-            return $this->resErrBad();
-        }
-
-        $client = new Client();
-        $appId = config("app.oauth2.wechat_mini_app.{$appName}.client_id");
-        $appSecret = config("app.oauth2.wechat_mini_app.{$appName}.client_secret");
-        $resp = $client->get(
-            "https://api.weixin.qq.com/sns/jscode2session?appid={$appId}&secret={$appSecret}&js_code={$code}&grant_type=authorization_code",
-            [
-                'Accept' => 'application/json'
-            ]
-        );
-        $body = json_decode($resp->getBody(), true);
-        $uniqueId = $body['unionid'] ?? '';
-        if (!isset($body['session_key']))
-        {
-            return $this->resErrServiceUnavailable('请尝试使用手机号登录/注册');
-        }
-
-        if (!$uniqueId)
-        {
-            return $this->resOK([
-                'type' => 'key',
-                'data' => $body['session_key']
-            ]);
-        }
-
-        $user = User
-            ::where('wechat_unique_id', $uniqueId)
-            ->first();
-
-        if (is_null($user))
-        {
-            return $this->resOK([
-                'type' => 'key',
-                'data' => $body['session_key']
-            ]);
-        }
-
-        return $this->resOK([
-            'type' => 'token',
-            'data' => $user->api_token
-        ]);
     }
 
     // QQ小程序注册用户或获取当前用户的 token
