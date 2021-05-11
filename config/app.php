@@ -175,6 +175,10 @@ return [
             'search_bad_history' => [
                 'client_id' => env('WECHAT_APP_SEARCH_BAD_HISTORY_OPEN_ID'),
                 'client_secret' => env('WECHAT_APP_SEARCH_BAD_HISTORY_SECRET'),
+            ],
+            'sign_love' => [
+                'client_id' => env('WECHAT_APP_SIGN_LOVE_OPEN_ID'),
+                'client_secret' => env('WECHAT_APP_SIGN_LOVE_OPEN_SECRET'),
             ]
         ],
         // QQ小程序

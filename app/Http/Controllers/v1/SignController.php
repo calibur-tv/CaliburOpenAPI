@@ -752,7 +752,7 @@ class SignController extends Controller
     public function bindWechatUser(Request $request)
     {
         $appName = $request->get('app_name');
-        if (!in_array($appName, ['moe_idol', 'search_bad_history']))
+        if (!in_array($appName, array_keys(config("app.oauth2.wechat_mini_app"))))
         {
             return $this->resErrBad();
         }
@@ -806,7 +806,7 @@ class SignController extends Controller
     public function bindQQUser(Request $request)
     {
         $appName = $request->get('app_name');
-        if (!in_array($appName, ['moe_idol', 'search_bad_history']))
+        if (!in_array($appName, array_keys(config("app.oauth2.wechat_mini_app"))))
         {
             return $this->resErrBad();
         }
@@ -860,7 +860,7 @@ class SignController extends Controller
     public function getWechatPhone(Request $request)
     {
         $appName = $request->get('app_name');
-        if (!in_array($appName, ['moe_idol', 'search_bad_history']))
+        if (!in_array($appName, array_keys(config("app.oauth2.wechat_mini_app"))))
         {
             return $this->resErrBad();
         }
@@ -930,7 +930,7 @@ class SignController extends Controller
     public function wechatMiniAppLogin(Request $request)
     {
         $appName = $request->get('app_name');
-        if (!in_array($appName, ['moe_idol', 'search_bad_history']))
+        if (!in_array($appName, array_keys(config("app.oauth2.wechat_mini_app"))))
         {
             return $this->resErrBad();
         }
@@ -985,7 +985,7 @@ class SignController extends Controller
     {
         $code = $request->get('code');
         $appName = $request->get('app_name');
-        if (!$code || !in_array($appName, ['moe_idol', 'search_bad_history']))
+        if (!$code || !in_array($appName, array_keys(config("app.oauth2.wechat_mini_app"))))
         {
             return $this->resErrBad();
         }
@@ -1036,7 +1036,7 @@ class SignController extends Controller
     public function qqMiniAppLogin(Request $request)
     {
         $appName = $request->get('app_name');
-        if (!in_array($appName, ['moe_idol']))
+        if (!in_array($appName, array_keys(config("app.oauth2.wechat_mini_app"))))
         {
             return $this->resErrBad();
         }
@@ -1092,7 +1092,7 @@ class SignController extends Controller
     {
         $code = $request->get('code');
         $appName = $request->get('app_name');
-        if (!$code || !in_array($appName, ['moe_idol']))
+        if (!$code || !in_array($appName, array_keys(config("app.oauth2.wechat_mini_app"))))
         {
             return $this->resErrBad();
         }
