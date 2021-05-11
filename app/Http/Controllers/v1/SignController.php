@@ -706,6 +706,49 @@ class SignController extends Controller
         return $this->resOK('手机号绑定成功');
     }
 
+    public function bindEmail(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'email_address' => 'required|email',
+            'email_code' => 'required|digits:6'
+        ]);
+
+        if ($validator->fails())
+        {
+            return $this->resErrParams($validator);
+        }
+
+        $email = $request->get('email_address');
+        $detect = $this->checkMessageAuthCode($email, 'bind_email', $request->get('email_code'));
+
+        if ($detect === null)
+        {
+            return $this->resErrBad('邮箱验证码过期');
+        }
+        if ($detect === false)
+        {
+            return $this->resErrBad('邮箱验证码错误');
+        }
+
+        if (!$this->accessIsNew('email', $email))
+        {
+            return $this->resErrBad('该邮箱已绑定另外一个账号');
+        }
+
+        $user = $request->user();
+
+        if ($user->email)
+        {
+            return $this->resErrBad('您的账号已绑定了其它邮箱：' . $user->email);
+        }
+
+        $user->update([
+            'email' => $email
+        ]);
+
+        return $this->resOK('邮箱绑定成功');
+    }
+
     public function bindWechatUser(Request $request)
     {
         $appName = $request->get('app_name');
@@ -1196,9 +1239,9 @@ class SignController extends Controller
         return User::withTrashed()->where($method, $access)->count() === 0;
     }
 
-    private function createMessageAuthCode($phone, $type)
+    private function createMessageAuthCode($access, $type)
     {
-        $key = 'phone_message_' . $type . '_' . $phone;
+        $key = 'validate_message_' . $type . ':' . $access;
         $value = rand(100000, 999999);
 
         Redis::SET($key, $value);
@@ -1207,9 +1250,9 @@ class SignController extends Controller
         return $value;
     }
 
-    private function checkMessageAuthCode($phone, $type, $token)
+    private function checkMessageAuthCode($access, $type, $token)
     {
-        $key = 'phone_message_' . $type . '_' . $phone;
+        $key = 'validate_message_' . $type . ':' . $access;
         $value = Redis::GET($key);
         if (is_null($value))
         {
@@ -1220,9 +1263,9 @@ class SignController extends Controller
         return intval($value) === intval($token);
     }
 
-    private function checkMessageThrottle($phone, $isDelete = false)
+    private function checkMessageThrottle($access, $isDelete = false)
     {
-        $cacheKey = 'validate_message_throttle:' . $phone;
+        $cacheKey = 'validate_message_throttle:' . $access;
         if ($isDelete)
         {
             Redis::DEL($cacheKey);

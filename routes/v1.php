@@ -28,6 +28,8 @@ $router->group(['prefix' => 'sign'], function () use ($router)
 
         $router->post('bind_phone', 'SignController@bindPhone');
 
+        $router->post('bind_email', 'SignController@bindEmail');
+
         $router->post('bind_weapp_user', 'SignController@bindWechatUser');
 
         $router->post('bind_qq_user', 'SignController@bindQQUser');
