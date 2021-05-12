@@ -5,6 +5,8 @@ namespace App\Http\Controllers\v1;
 use App\Http\Controllers\Controller;
 use App\Http\Repositories\UserRepository;
 use App\Http\Transformers\User\UserAuthResource;
+use App\Models\Group;
+use App\Models\Relation;
 use App\Services\Geetest\Captcha;
 use App\Services\Sms\Email;
 use App\Services\Sms\Message;
@@ -418,6 +420,31 @@ class SignController extends Controller
             return $this->resErrRole();
         }
 
+        $group = $request->get('with_group');
+        if ($group)
+        {
+            $relation = Relation
+                ::where('type', 1)
+                ->where('attach_id', $user->id)
+                ->first();
+
+            if ($relation)
+            {
+                $group = Group
+                    ::where('id', $relation->detach_id)
+                    ->first();
+
+                if ($group)
+                {
+                    $user->group = [
+                        'id' => $group->id,
+                        'name' => $group->name,
+                        'avatar' => $group->avatar
+                    ];
+                }
+            }
+        }
+
         return $this->resOK(new UserAuthResource($user));
     }
 
@@ -744,6 +771,40 @@ class SignController extends Controller
 
         $user->update([
             'email' => $email
+        ]);
+
+        $org = explode('@', $email)[1];
+
+        /**
+         * 查询或创建 group
+         */
+        $group = Group
+            ::where('type', 1)
+            ->where('name', $org)
+            ->first();
+        if (!$group)
+        {
+            $group = Group::create([
+                'type' => 1,
+                'name' => $org
+            ]);
+        }
+
+        /**
+         * 从旧的 group 离开，加入新的 Group
+         */
+        $relation = Relation
+            ::where('attach_id', $user->id)
+            ->where('type', 1)
+            ->first();
+        if ($relation)
+        {
+            $relation->delete();
+        }
+        Relation::create([
+            'attach_id' => $user->id,
+            'detach_id' => $group->id,
+            'type' => 1,
         ]);
 
         return $this->resOK('邮箱绑定成功');

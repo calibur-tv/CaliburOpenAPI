@@ -343,6 +343,7 @@ class CallbackController extends Controller
         $prefix = $arr[0];
         $userId = str_replace('user-', '', $prefix);
         $split = explode('-', $arr[1]);
+        $split = count($split) === 1 ? ['0', $split[0]] : $split;
         $folderId = $split[0];
         $name = $split[1];
 

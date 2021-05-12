@@ -35,7 +35,8 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
         'qq_open_id',
         'qq_unique_id',
         'desk_max_space',
-        'desk_use_space'
+        'desk_use_space',
+        'meta'
     ];
 
     /**
@@ -112,5 +113,15 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
     public static function spaceUsageAdd($user, $size)
     {
         $user->increment('desk_use_space', ceil($size));
+    }
+
+    public function setMetaAttribute($meta)
+    {
+        $this->attributes['meta'] = json_encode($meta);
+    }
+
+    public function getMetaAttribute($meta)
+    {
+        return json_decode($meta);
     }
 }

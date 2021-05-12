@@ -22,12 +22,14 @@ class UserAuthResource extends JsonResource
             'desk_max_space' => $this->desk_max_space,
             'desk_use_space' => $this->desk_use_space,
             'title' => [],
+            'group' => $this->group,
             'providers' => [
                 'bind_qq' => !!$this->qq_unique_id,
                 'bind_wechat' => !!$this->wechat_unique_id,
                 'bind_phone' => !!$this->phone,
                 'bind_email' => !!$this->email
-            ]
+            ],
+            'meta' => $this->meta
         ];
     }
 }
