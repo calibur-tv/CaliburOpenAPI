@@ -63,6 +63,15 @@ $router->group(['prefix' => 'bangumi'], function () use ($router)
 
 });
 
+$router->group(['prefix' => 'user'], function () use ($router)
+{
+    $router->group(['middleware' => 'auth'], function () use ($router)
+    {
+        $router->post('profile', 'UserController@profile');
+    });
+});
+
+
 $router->group(['prefix' => 'desk', 'middleware' => 'auth'], function () use ($router)
 {
     $router->get('upload_token', 'DeskController@token');
