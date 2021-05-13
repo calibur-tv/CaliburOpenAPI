@@ -1189,6 +1189,45 @@ class SignController extends Controller
         return $this->resOK($result);
     }
 
+    public function realNameVerify(Request $request)
+    {
+        $name = $request->get('name');
+        $card = $request->get('card');
+        $name = urlencode($name);
+
+        $client = new Client();
+        $resp = $client->get(
+            "http://zid.market.alicloudapi.com/idcard/VerifyIdcardv2?realName={$name}&cardNo={$card}",
+            [
+                'headers' => [
+                    'Authorization' => 'APPCODE ' . 'aacc1164957c4789bf093c7aa2fa1e01'
+                ]
+            ]
+        );
+
+        $body = json_decode($resp->getBody(), true);
+
+        if ($body['error_code'] !== 0)
+        {
+            return $this->resErrServiceUnavailable();
+        }
+
+        if (!$body['result']['isok'])
+        {
+            return $this->resErrBad('实名认证失败');
+        }
+
+        $user = $request->user();
+        $meta = $user->meta;
+        $meta->realname = $name;
+        $meta->idcard = $card;
+        $user->update([
+            'meta' => $meta
+        ]);
+
+        return $this->resOK();
+    }
+
     private function accessIsNew($method, $access)
     {
         return User::withTrashed()->where($method, $access)->count() === 0;

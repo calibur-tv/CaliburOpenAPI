@@ -33,6 +33,8 @@ $router->group(['prefix' => 'sign'], function () use ($router)
         $router->post('bind_email', 'SignController@bindEmail');
 
         $router->post('bind_qq_user', 'SignController@bindQQUser');
+
+        $router->post('verify_realname', 'SignController@realNameVerify');
     });
 
     $router->post('qq_mini_app_login', 'SignController@qqMiniAppLogin');
