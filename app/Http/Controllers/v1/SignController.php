@@ -1200,7 +1200,7 @@ class SignController extends Controller
             "http://zid.market.alicloudapi.com/idcard/VerifyIdcardv2?realName={$name}&cardNo={$card}",
             [
                 'headers' => [
-                    'Authorization' => 'APPCODE ' . 'aacc1164957c4789bf093c7aa2fa1e01'
+                    'Authorization' => 'APPCODE ' . config('app.aliyun.realname')
                 ]
             ]
         );
