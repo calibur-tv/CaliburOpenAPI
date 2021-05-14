@@ -1191,10 +1191,21 @@ class SignController extends Controller
 
     public function realNameVerify(Request $request)
     {
-        $name = $request->get('name');
-        $card = $request->get('card');
-        $name = urlencode($name);
+        $name = $request->get('realname');
+        $card = $request->get('idcard');
+        $user = $request->user();
 
+        if ($user->idcard && $user->idcard !== $card)
+        {
+            return $this->resErrBad('该账号已实名认证');
+        }
+
+        if (User::where('idcard', $card)->count())
+        {
+            return $this->resErrBad('该身份证已绑定其它账号');
+        }
+
+        $name = urlencode($name);
         $client = new Client();
         $resp = $client->get(
             "http://zid.market.alicloudapi.com/idcard/VerifyIdcardv2?realName={$name}&cardNo={$card}",
@@ -1217,12 +1228,9 @@ class SignController extends Controller
             return $this->resErrBad('实名认证失败');
         }
 
-        $user = $request->user();
-        $meta = $user->meta;
-        $meta->realname = $name;
-        $meta->idcard = $card;
         $user->update([
-            'meta' => $meta
+            'realname' => $name,
+            'idcard' => $card
         ]);
 
         return $this->resOK();

@@ -33,6 +33,9 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
         'invitor_id',
         'password',
         'api_token',
+        'idcard',
+        'realname',
+        'aboutus',
         'wechat_open_id',
         'wechat_unique_id',
         'qq_open_id',
@@ -126,5 +129,15 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
     public function getMetaAttribute($meta)
     {
         return json_decode($meta);
+    }
+
+    public function setAboutusAttribute($about)
+    {
+        $this->attributes['aboutus'] = json_encode($about);
+    }
+
+    public function getAboutusAttribute($about)
+    {
+        return json_decode($about);
     }
 }

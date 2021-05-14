@@ -44,9 +44,16 @@ class AuthServiceProvider extends ServiceProvider
                 {
                     return null;
                 }
-                $userId = slug2id($maskId);
 
-                return User::where('id', $userId)->first();
+                $user = User
+                    ::where('id', slug2id($maskId))
+                    ->first();
+                if ($user->api_token !== $token)
+                {
+                    return null;
+                }
+
+                return $user;
             }
             catch (\Exception $e)
             {
