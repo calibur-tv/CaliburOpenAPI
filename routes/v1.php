@@ -67,6 +67,10 @@ $router->group(['prefix' => 'bangumi'], function () use ($router)
 
 $router->group(['prefix' => 'user'], function () use ($router)
 {
+    $router->get('about_flow', 'UserController@aboutFlow');
+
+    $router->get('show', 'UserController@show');
+
     $router->group(['middleware' => 'auth'], function () use ($router)
     {
         $router->post('profile', 'UserController@profile');

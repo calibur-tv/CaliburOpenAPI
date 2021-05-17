@@ -42,7 +42,9 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
         'qq_unique_id',
         'desk_max_space',
         'desk_use_space',
-        'meta'
+        'meta',
+        'love_user',
+        'love_type'
     ];
 
     /**

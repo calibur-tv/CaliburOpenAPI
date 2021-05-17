@@ -1205,10 +1205,10 @@ class SignController extends Controller
             return $this->resErrBad('该身份证已绑定其它账号');
         }
 
-        $name = urlencode($name);
+        $encodeName = urlencode($name);
         $client = new Client();
         $resp = $client->get(
-            "http://zid.market.alicloudapi.com/idcard/VerifyIdcardv2?realName={$name}&cardNo={$card}",
+            "http://zid.market.alicloudapi.com/idcard/VerifyIdcardv2?realName={$encodeName}&cardNo={$card}",
             [
                 'headers' => [
                     'Authorization' => 'APPCODE ' . config('app.aliyun.realname')
