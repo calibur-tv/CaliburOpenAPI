@@ -127,7 +127,7 @@ class RoleController extends Controller
 
         $userRepository = new UserRepository();
         $userRepository->item($userSlug, true);
-        $userRepository->managers(true);
+        // $userRepository->managers(true);
 
         return $this->resOK($user);
     }

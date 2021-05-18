@@ -25,8 +25,29 @@ class UserItemResource extends JsonResource
                 'bind_email' => !!$this->email,
                 'bind_idcard' => !!$this->idcard
             ],
+            'idcard' => $this->formatIdCard($this->idcard),
+            'realname' => $this->formatTrueName($this->realname),
+            'love_type' => $this->love_type,
+            'love_slug' => $this->love_user ? id2slug($this->love_user) : '',
             'meta' => $this->meta,
+            'email' => $this->email,
             'aboutus' => $this->aboutus
         ];
+    }
+
+    protected function formatTrueName($true_name)
+    {
+        return "*" . mb_substr($true_name, 1);
+    }
+
+    protected function formatIdCard($id_card)
+    {
+        //每隔1位分割为数组
+        $split = str_split($id_card);
+        //头2位和尾保留，其他部分替换为星号
+        $split = array_fill(2,count($split) - 3,"*") + $split;
+        ksort($split);
+        //合并
+        return implode('', $split);
     }
 }

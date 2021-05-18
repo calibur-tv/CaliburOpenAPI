@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Http\Repositories\UserRepository;
 use Illuminate\Auth\Authenticatable;
 use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
@@ -111,6 +112,13 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
         ]);
 
         return $user;
+    }
+
+    public function updateUser($form)
+    {
+        $this->update($form);
+        $userRepository = new UserRepository();
+        $userRepository->item($this->slug, true);
     }
 
     public static function spaceIsExceed($user, $size)

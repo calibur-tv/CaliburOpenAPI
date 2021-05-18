@@ -74,6 +74,10 @@ $router->group(['prefix' => 'user'], function () use ($router)
     $router->group(['middleware' => 'auth'], function () use ($router)
     {
         $router->post('profile', 'UserController@profile');
+
+        $router->post('sign_together', 'UserController@signTogether');
+
+        $router->post('sign_single', 'UserController@signSingle');
     });
 });
 

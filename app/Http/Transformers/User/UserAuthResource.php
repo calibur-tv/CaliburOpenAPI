@@ -30,7 +30,10 @@ class UserAuthResource extends JsonResource
                 'bind_email' => !!$this->email,
                 'bind_idcard' => !!$this->idcard
             ],
+            'love_type' => $this->love_type,
+            'love_slug' => $this->love_user ? id2slug($this->love_user) : '',
             'meta' => $this->meta,
+            'email' => $this->email,
             'aboutus' => $this->aboutus
         ];
     }

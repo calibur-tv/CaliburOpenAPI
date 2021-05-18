@@ -1228,7 +1228,7 @@ class SignController extends Controller
             return $this->resErrBad('实名认证失败');
         }
 
-        $user->update([
+        $user->updateUser([
             'realname' => $name,
             'idcard' => $card
         ]);
