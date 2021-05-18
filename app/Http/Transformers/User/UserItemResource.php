@@ -28,7 +28,7 @@ class UserItemResource extends JsonResource
             'idcard' => $this->formatIdCard($this->idcard),
             'realname' => $this->formatTrueName($this->realname),
             'love_type' => $this->love_type,
-            'love_slug' => $this->love_user ? id2slug($this->love_user) : '',
+            'love_user' => $this->love_user,
             'meta' => $this->meta,
             'email' => $this->email,
             'aboutus' => $this->aboutus
@@ -37,11 +37,21 @@ class UserItemResource extends JsonResource
 
     protected function formatTrueName($true_name)
     {
+        if (!$true_name)
+        {
+            return '';
+        }
+
         return "*" . mb_substr($true_name, 1);
     }
 
     protected function formatIdCard($id_card)
     {
+        if (!$id_card)
+        {
+            return '';
+        }
+
         //每隔1位分割为数组
         $split = str_split($id_card);
         //头2位和尾保留，其他部分替换为星号

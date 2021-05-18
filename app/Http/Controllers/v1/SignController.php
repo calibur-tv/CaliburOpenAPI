@@ -769,11 +769,11 @@ class SignController extends Controller
             return $this->resErrBad('您的账号已绑定了其它邮箱：' . $user->email);
         }
 
-        $user->update([
-            'email' => $email
-        ]);
-
         $org = explode('@', $email)[1];
+        $user->update([
+            'email' => $email,
+            'org' => $org
+        ]);
 
         /**
          * 查询或创建 group

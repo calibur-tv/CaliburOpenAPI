@@ -44,6 +44,7 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
         'desk_max_space',
         'desk_use_space',
         'meta',
+        'org',
         'love_user',
         'love_type'
     ];

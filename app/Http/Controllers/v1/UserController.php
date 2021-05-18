@@ -140,12 +140,14 @@ class UserController extends Controller
     public function aboutFlow(Request $request)
     {
         $seenIds = $request->get('seen_ids') ? explode(',', $request->get('seen_ids')) : [];
+        $org = $request->get('org');
 
         $users = User
             ::whereNotIn('id', $seenIds)
             ->whereNotNull('aboutus')
             ->whereNotNull('meta')
             ->where('love_type', 0)
+            ->where('org', $org)
             ->orderBy('updated_at', 'DESC')
             ->select('id', 'slug', 'avatar', 'nickname', 'aboutus', 'meta', 'realname')
             ->take(20)
